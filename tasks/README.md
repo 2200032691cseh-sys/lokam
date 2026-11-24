@@ -1,6 +1,14 @@
 # Dependency-ordered implementation backlog
 
-**Planning baseline.** 69 planned tasks. Architecture approval precedes feature work, and each implementation task requires authorization. Complete each dependency and record verification evidence before marking a task done.
+**Architecture approved November 24, 2026.** Execution is authorized across the backlog. Complete each dependency and record verification evidence before marking a task done. Tasks without a status below are pending.
+
+| Task | Status | Evidence or next action |
+|---|---|---|
+| LOK-001 | Complete | Product acceptance matrix and task index cover the brief. `python scripts/check_docs.py` checks all task links, ordering and release dependencies. |
+| LOK-002 | Complete | Repository owner approved the proposed architecture and authorized execution of the backlog in dependency order. |
+| LOK-003 | In progress | Review the logical schema against concurrent writes, merges and erasure before introducing models. |
+| LOK-004 | In progress | Provider policy review exists. Verify concrete field rights and identify credentialed acceptance checks. |
+| LOK-005 | In progress | Install user-local uv, Python 3.13 and PostgreSQL 17; verify a local connection and locked dependency sync. |
 
 LOK-017 tests the architecture end to end with one user. LOK-058 is optional. LOK-067 is private beta and LOK-068 is the public launch gate.
 

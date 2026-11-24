@@ -1,6 +1,6 @@
 # Proposed architecture
 
-**Awaiting explicit approval.** One Django modular monolith, PostgreSQL database, object-storage interface and bounded worker. Propose Django 5.2 LTS, Python 3.13, PostgreSQL 17, Psycopg 3 and uv, with compatible patches pinned after the Windows/Linux check. Use Django templates/forms and progressive vanilla JS. Serve via Gunicorn WSGI on Linux and WhiteNoise static files. ASGI requires a streaming decision. [Django support](https://www.djangoproject.com/download/)
+**Approved November 24, 2026.** One Django modular monolith, PostgreSQL database, object-storage interface and bounded worker. Use Django 5.2 LTS, Python 3.13, PostgreSQL 17, Psycopg 3 and uv, with compatible patches pinned after the Windows/Linux check. Use Django templates/forms and progressive vanilla JS. Serve via Gunicorn WSGI on Linux and WhiteNoise static files. ASGI requires a streaming decision. [Django support](https://www.djangoproject.com/download/)
 
 Apps own identity, profile navigation/privacy, catalogue and graph, personal libraries, collections, memories, timeline, discovery, search, social, media, moderation, integrations, jobs, portability and operations. Create modules when needed. Views validate forms and use scoped queries. Explicit services own transactions. Integrations return validated candidates; catalogue services resolve and persist permitted fields; libraries own personal saves. Avoid internal HTTP, generic ORM wrappers and hidden signal-based workflows. Configurations separate development, test and production.
 

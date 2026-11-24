@@ -1,6 +1,6 @@
 # LOK-001 Product trace and acceptance
 
-**Status** Planned. Architecture and task authorization required before implementation.
+**Status** Complete. See the evidence in [the task index](README.md).
 
 ## Problem being solved
 
