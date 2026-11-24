@@ -19,6 +19,8 @@
 | LOK-013 | Complete | Verified exact identifier resolution, ISBN conversion and checksum, conflicting bindings, and revision-linked source credits. |
 | LOK-014 | Complete | Live book, film and TV reads passed with Open Library and Wikidata. Contract tests cover typed responses, rate limits and idempotent imports. |
 | LOK-015 | Complete | Browser entry points cover local-first search, signed external confirmation, manual fallback, idempotent saves, typed state and scoped library display. |
+| LOK-016 | Complete | PostgreSQL tests cover typed edges, revisioned evidence, exact-ID mapping, review and withdrawal. A live Wikidata import supplied the adaptation evidence used in the milestone. |
+| LOK-017 | Complete | Live end-to-end test registered and verified one account, saved Open Library work OL66554W, and recommended film Q270385 from reviewed Wikidata and distributor evidence. Regression covers content evidence, filtering and withdrawal of unreviewed edges. |
 
 LOK-017 tests the architecture end to end with one user. LOK-058 is optional. LOK-067 is private beta and LOK-068 is the public launch gate.
 

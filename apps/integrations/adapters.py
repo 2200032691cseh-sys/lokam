@@ -158,6 +158,24 @@ def _search_wikidata(kind, query, fetch):
         keys.setdefault(key, entry.get("label"))
     if not keys:
         return []
+    entities = fetch_wikidata_entities(keys, fetch=fetch)
+    return [
+        match
+        for key, fallback_label in keys.items()
+        if (
+            match := _wikidata_candidate(
+                key, _object(entities.get(key)), kind, fallback_label
+            )
+        )
+    ]
+
+
+def fetch_wikidata_entities(ids, *, fetch=get_json):
+    keys = list(
+        dict.fromkeys(normalize_identifier(Namespace.WIKIDATA, key) for key in ids)
+    )
+    if not 1 <= len(keys) <= 8:
+        raise ValidationError("Query between one and eight Wikidata entity IDs.")
     data = fetch(
         "wikidata-read",
         "/w/api.php",
@@ -168,20 +186,12 @@ def _search_wikidata(kind, query, fetch):
             "props": "info|labels|claims",
             "format": "json",
         },
-        headers=headers,
+        headers={"User-Agent": "Lokam/0.1"},
     )
     entities = data.get("entities")
     if not isinstance(entities, dict):
         raise ProviderUnavailable("Wikidata did not return structured entity data.")
-    return [
-        match
-        for key, fallback_label in keys.items()
-        if (
-            match := _wikidata_candidate(
-                key, _object(entities.get(key)), kind, fallback_label
-            )
-        )
-    ]
+    return entities
 
 
 def search_external(kind, query, *, fetch=get_json):

@@ -1,0 +1,26 @@
+{% extends "platform/base.html" %}
+{% block title %}Discover | Lokam{% endblock %}
+{% block content %}
+<h1>Discover</h1>
+<form method="get">
+  <label for="discover-kind">Type</label>
+  <select id="discover-kind" name="kind">
+    <option value="">All types</option>
+    {% for value,label in kinds %}<option value="{{ value }}"{% if value == kind %} selected{% endif %}>{{ label }}</option>{% endfor %}
+  </select>
+  <button type="submit">Filter</button>
+</form>
+{% if recommendations %}
+  <ul>
+    {% for result in recommendations %}
+      <li>
+        <a href="{% url 'catalogue:detail' result.item.public_id %}">{{ result.item.title }}</a>
+        <small>{{ result.item.get_kind_display }}</small>
+        <p>{{ result.reason }}{% if result.via %} · <a href="{% url 'catalogue:detail' result.via.public_id %}">View the connection</a>{% endif %}</p>
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>No related discoveries are available yet. <a href="{% url 'libraries:add' %}">Find something to save</a> or <a href="{% url 'catalogue:browse' %}">browse the catalogue</a>.</p>
+{% endif %}
+{% endblock %}

@@ -96,6 +96,7 @@ def bind_identifier(item, namespace, value):
     return identifier
 
 
+@transaction.atomic
 def record_source(
     item,
     *,
@@ -135,7 +136,7 @@ def record_source(
         raise ValidationError(
             "Record the rights or attribution basis before enabling reuse."
         )
-    source, _ = CatalogueSource.objects.get_or_create(
+    source, created = CatalogueSource.objects.select_for_update().get_or_create(
         item=item,
         provider=provider,
         reference=reference,
@@ -148,6 +149,18 @@ def record_source(
             "export_allowed": export_allowed,
         },
     )
+    if not created:
+        if (
+            source.source_url != url
+            or source.licence != licence
+            or source.export_allowed != export_allowed
+        ):
+            raise ValidationError(
+                "Reusing a revision requires the same source and rights."
+            )
+        source.fields = sorted(set(source.fields) | field_names)
+        source.show_credit = source.show_credit or show_credit
+        source.save(update_fields=["fields", "show_credit"])
     return source
 
 

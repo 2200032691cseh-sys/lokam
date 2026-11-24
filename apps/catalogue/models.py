@@ -4,6 +4,7 @@ import uuid
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models import Q
 
 from .identifiers import Namespace, normalize_identifier
 
@@ -277,4 +278,76 @@ class CatalogueSource(models.Model):
                 condition=models.Q(provider__in=SourceProvider.values),
                 name="catalogue_valid_source",
             ),
+        ]
+
+
+class Predicate(models.TextChoices):
+    ADAPTED_FROM = "adapted-from", "Adapted from"
+    WRITTEN_BY = "written-by", "Written by"
+    DIRECTED_BY = "directed-by", "Directed by"
+    CREATED_BY = "created-by", "Created by"
+    COMPOSED_BY = "composed-by", "Composed by"
+    PERFORMED_BY = "performed-by", "Performed by"
+    FEATURES_CHARACTER = "features-character", "Features character"
+    DEPICTS_FIGURE = "depicts-figure", "Depicts historical figure"
+    DEPICTS_EVENT = "depicts-event", "Depicts historical event"
+    SET_IN = "set-in", "Set in"
+    SET_DURING = "set-during", "Set during"
+    CULTURE = "associated-culture", "Associated with culture"
+    LANGUAGE = "associated-language", "Associated with language"
+    SOUNDTRACK = "soundtrack-of", "Soundtrack of"
+    SERIES = "part-of-series", "Part of series"
+    FRANCHISE = "part-of-franchise", "Part of franchise"
+    MYTHOLOGY = "associated-mythology", "Associated with mythology"
+    INFLUENCED_BY = "influenced-by", "Influenced by"
+    LOCATED_IN = "located-in", "Located in"
+    CUISINE = "associated-cuisine", "Associated with cuisine"
+    SUBJECT = "shares-subject", "Shares subject"
+    THEME = "shares-theme", "Shares theme"
+
+
+class CatalogueRelationship(models.Model):
+    subject = models.ForeignKey(
+        CatalogueItem, on_delete=models.CASCADE, related_name="outgoing_edges"
+    )
+    object = models.ForeignKey(
+        CatalogueItem, on_delete=models.CASCADE, related_name="incoming_edges"
+    )
+    predicate = models.CharField(max_length=24, choices=Predicate.choices)
+    verified_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        indexes = [
+            models.Index(
+                fields=["object", "predicate"], name="catalogue_edge_reverse_idx"
+            )
+        ]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["subject", "predicate", "object"], name="catalogue_unique_edge"
+            ),
+            models.CheckConstraint(
+                condition=~Q(subject=models.F("object")), name="catalogue_no_self_edge"
+            ),
+            models.CheckConstraint(
+                condition=Q(predicate__in=Predicate.values), name="catalogue_known_edge"
+            ),
+        ]
+
+
+class RelationshipEvidence(models.Model):
+    edge = models.ForeignKey(
+        CatalogueRelationship, on_delete=models.CASCADE, related_name="evidence"
+    )
+    source = models.ForeignKey(CatalogueSource, on_delete=models.CASCADE)
+    statement_id = models.CharField(max_length=100)
+    reference_url = models.URLField(max_length=500, blank=True)
+    qualifiers = models.JSONField(default=dict)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["edge", "source", "statement_id"],
+                name="catalogue_unique_edge_evidence",
+            )
         ]

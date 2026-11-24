@@ -1,6 +1,6 @@
 # LOK-017 Baseline candidates and cross-domain slice
 
-**Status** Planned. Architecture and task authorization required before implementation.
+**Status** Complete. Live one-user acquisition and adaptation smoke test passed.
 
 ## Problem being solved
 

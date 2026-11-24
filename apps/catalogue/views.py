@@ -4,6 +4,7 @@ from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_safe
 
 from .models import ItemKind
+from .relationships import public_relations
 from .services import public_details, public_items
 
 
@@ -26,4 +27,8 @@ def browse(request):
 @require_safe
 def detail(request, public_id):
     item = get_object_or_404(public_details(), public_id=public_id)
-    return render(request, "catalogue/detail.html", {"item": item})
+    return render(
+        request,
+        "catalogue/detail.html",
+        {"item": item, "relations": public_relations(item)},
+    )
