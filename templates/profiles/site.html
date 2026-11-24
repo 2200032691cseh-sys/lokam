@@ -34,7 +34,32 @@
       {% include "components/pagination.html" with page_obj=item_page %}
     {% else %}<p>There’s nothing here yet.</p>{% endif %}
   {% endblock %}
-{% elif owner and not profile.introduction %}
-  <p><a href="{% url 'profiles:settings' %}">Edit your website settings</a></p>
+{% else %}
+  {% if avatar %}
+    <img class="profile-avatar" src="{% url 'profiles:avatar' profile.user.username %}" alt="{{ avatar.description }}"
+         width="{{ avatar.variants.small.width }}" height="{{ avatar.variants.small.height }}">
+  {% endif %}
+  {% if featured_favourites %}
+    <section aria-labelledby="featured-favourites">
+      <h2 id="featured-favourites">Selected favourites</h2>
+      <ul>
+        {% for saved in featured_favourites %}
+          <li>{% if owner %}<a href="{% url 'libraries:edit' saved.public_id %}">{{ saved.item.title }}</a>
+          {% else %}<a href="{% url 'catalogue:detail' saved.item.public_id %}">{{ saved.item.title }}</a>{% endif %}</li>
+        {% endfor %}
+      </ul>
+    </section>
+  {% endif %}
+  {% if connections %}
+    <section aria-labelledby="interest-connections">
+      <h2 id="interest-connections">Connections between interests</h2>
+      <ul>{% for edge in connections %}
+        <li><a href="{% url 'catalogue:detail' edge.subject.public_id %}">{{ edge.subject.title }}</a> · {{ edge.get_predicate_display|lower }} · <a href="{% url 'catalogue:detail' edge.object.public_id %}">{{ edge.object.title }}</a></li>
+      {% endfor %}</ul>
+    </section>
+  {% endif %}
+  {% if owner and not profile.introduction %}
+    <p><a href="{% url 'profiles:settings' %}">Edit your website settings</a></p>
+  {% endif %}
 {% endif %}
 {% endblock %}

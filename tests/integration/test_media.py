@@ -13,10 +13,13 @@ from PIL import Image
 from apps.accounts.middleware import SESSION_GENERATION_KEY
 from apps.catalogue.models import CatalogueItem, ItemKind, SourceProvider
 from apps.catalogue.services import record_source
+from apps.core.policies import Visibility
 from apps.integrations.commons_images import import_commons_image
 from apps.jobs.services import claim, finish
 from apps.media.models import AssetState, MediaAsset
 from apps.media.services import private_storage, record_catalogue_image
+from apps.profiles.models import PageKey
+from apps.profiles.services import create_profile
 
 
 @pytest.fixture
@@ -158,3 +161,43 @@ def test_lok_018_live_commons_lookup_preserves_attribution(client):
     assert image.credit and image.licence_url
     response = client.get(reverse("catalogue:detail", args=[person.public_id]))
     assert b"An engraved portrait of Jane Austen" in response.content
+
+
+@pytest.mark.django_db
+def test_lok_019_avatar_requires_owner_and_home_publication(isolated_storage):
+    owner = member("owner")
+    stranger = member("stranger")
+    person = get_user_model().objects.get(username="owner")
+    create_profile(person)
+    owner.post(
+        reverse("media:index"),
+        {"image": sample_photo(), "description": "Profile photograph"},
+    )
+    run_media_job()
+    image = MediaAsset.objects.get()
+    settings_url = reverse("profiles:settings")
+    assert (
+        stranger.post(
+            settings_url, {"avatar": image.pk, "visibility": Visibility.PUBLIC}
+        ).status_code
+        == 200
+    )
+    assert (
+        owner.post(
+            settings_url, {"avatar": image.pk, "visibility": Visibility.PUBLIC}
+        ).status_code
+        == 302
+    )
+    home_settings = reverse("profiles:configure-page", args=[PageKey.HOME])
+    owner.post(home_settings, {"enabled": "on", "visibility": Visibility.PUBLIC})
+    avatar = reverse("profiles:avatar", args=["owner"])
+    assert Client().get(avatar).status_code == 404
+    owner.post(
+        settings_url,
+        {"avatar": image.pk, "share_avatar": "on", "visibility": Visibility.PUBLIC},
+    )
+    response = Client().get(avatar)
+    assert response.status_code == 200
+    assert b"".join(response.streaming_content).startswith(b"RIFF")
+    owner.post(home_settings, {"visibility": Visibility.PUBLIC})
+    assert Client().get(avatar).status_code == 404

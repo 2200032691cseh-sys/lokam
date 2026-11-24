@@ -11,5 +11,6 @@ urlpatterns = [
         name="configure-page",
     ),
     path("u/<str:username>/", views.website, name="home"),
+    path("u/<str:username>/avatar/", views.avatar, name="avatar"),
     path("u/<str:username>/<slug:page>/", views.website, name="page"),
 ]

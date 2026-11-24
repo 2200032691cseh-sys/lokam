@@ -32,6 +32,10 @@ class Profile(models.Model):
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profile"
     )
     introduction = models.TextField(max_length=2000, blank=True)
+    avatar = models.ForeignKey(
+        "media.MediaAsset", on_delete=models.SET_NULL, null=True, blank=True
+    )
+    share_avatar = models.BooleanField(default=False)
     visibility = models.CharField(
         max_length=9, choices=Visibility.choices, default=Visibility.PRIVATE
     )

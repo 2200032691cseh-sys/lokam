@@ -28,9 +28,24 @@ class ManualItemForm(forms.Form):
 
 
 class ItemSettingsForm(forms.ModelForm):
+    def clean(self):
+        data = super().clean()
+        if data.get("feature_on_home") and not data.get("favourite"):
+            self.add_error(
+                "feature_on_home", "Mark this item as a favourite to feature it."
+            )
+        return data
+
     class Meta:
         model = UserItem
-        fields = ["state", "favourite", "rating", "note", "visibility"]
+        fields = [
+            "state",
+            "favourite",
+            "feature_on_home",
+            "rating",
+            "note",
+            "visibility",
+        ]
         widgets = {"note": forms.Textarea(attrs={"rows": 4})}
         help_texts = {
             "note": "Only you can see this note.",
