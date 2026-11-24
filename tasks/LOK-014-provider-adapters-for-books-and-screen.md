@@ -1,6 +1,6 @@
 # LOK-014 Provider adapters for books and screen
 
-**Status** Planned. Architecture and task authorization required before implementation.
+**Status** Live TMDB verification pending. Open Library live search and local provider contract tests passed.
 
 ## Problem being solved
 

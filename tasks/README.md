@@ -17,6 +17,7 @@
 | LOK-011 | Complete | Tests cover 20 private-by-default slots, public preview, composed visibility, owner editing and position changes without affecting another user. |
 | LOK-012 | Complete | Tests cover typed canonical items, Unicode aliases, public-only credits, pagination and the database prohibition on publishing owner-only records. |
 | LOK-013 | Complete | Verified exact identifier resolution, ISBN conversion and checksum, conflicting bindings, and revision-linked source credits. |
+| LOK-014 | Live TMDB verification pending | Open Library passed a live book search. Both adapters have contract tests. Configure `LOKAM_TMDB_TOKEN` in the ignored environment file before verifying live film and TV search. |
 
 LOK-017 tests the architecture end to end with one user. LOK-058 is optional. LOK-067 is private beta and LOK-068 is the public launch gate.
 

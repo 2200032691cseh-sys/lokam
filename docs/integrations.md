@@ -21,6 +21,8 @@ Adapters use a common typed candidate schema and per-provider auth, allowlists, 
 
 ## Initial adapter gates
 
+The local adapter supports Open Library work search and TMDB film and TV search. Successful reads yield bounded normalized candidates. Import by exact ID is idempotent and records the selected title and year with a source revision. No long descriptions or provider images are copied by these adapters. To verify a live read, run `uv run --env-file .env python manage.py check_catalogue_provider book`. Run the same command with `movie` and `tv-show` after configuring an authorized `LOKAM_TMDB_TOKEN` in the ignored environment. These checks do not add catalogue records.
+
 | Source | Fields eligible for initial ingestion | Held pending verification |
 |---|---|---|
 | Open Library | Work and edition IDs, ISBN, title, authors, publication year, language and factual subject references, with source provenance. Use at most one request per second until a maintainer contact is configured. | Long descriptions and cover redisplay or storage pending field and asset rights review. [Licensing](https://openlibrary.org/developers/licensing) |
