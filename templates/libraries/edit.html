@@ -3,6 +3,7 @@
 {% block content %}
 <h1>{{ saved.item.title }}</h1>
 <p><a href="{% url 'libraries:index' %}">Saved items</a></p>
+<p><a href="{% url 'discovery:discover' %}">Discover related interests</a></p>
 {% if saved.item.is_public %}<p><a href="{% url 'catalogue:detail' saved.item.public_id %}">Catalogue details</a></p>{% endif %}
 <form method="post">
   {% csrf_token %}{% include "components/form_fields.html" %}

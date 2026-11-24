@@ -4,7 +4,7 @@ Lokam is a planned personal website and discovery tool for interests spread acro
 
 ## Status
 
-The local application has a landing page, account registration and recovery using console email, and a PostgreSQL job runner. See the [task index](tasks/README.md) for verified implementation progress.
+The local application supports registration and recovery with console email, private-by-default personal websites, a public catalogue, saved items, and related discoveries from verified links and shared subjects. Open Library and Wikidata supply book and screen metadata. See the [task index](tasks/README.md) for verified implementation progress.
 
 ## Architecture
 

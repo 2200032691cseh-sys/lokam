@@ -18,6 +18,7 @@
         <a href="{% url 'profiles:home' request.user.username %}">Your website</a>
         <a href="{% url 'profiles:settings' %}">Profile settings</a>
         <a href="{% url 'libraries:index' %}">Saved items</a>
+        <a href="{% url 'discovery:discover' %}">Discover</a>
         <form method="post" action="{% url 'accounts:logout' %}">
           {% csrf_token %}
           <button type="submit">Log out</button>
