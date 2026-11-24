@@ -1,0 +1,23 @@
+{% extends "platform/base.html" %}
+{% block title %}Catalogue | Lokam{% endblock %}
+{% block content %}
+<h1>Catalogue</h1>
+<form method="get">
+  <label for="catalogue-kind">Type</label>
+  <select id="catalogue-kind" name="kind">
+    <option value="">All types</option>
+    {% for value,label in kind_choices %}<option value="{{ value }}"{% if value == kind %} selected{% endif %}>{{ label }}</option>{% endfor %}
+  </select>
+  <button type="submit">Filter</button>
+</form>
+<ul>
+  {% for item in page_obj %}
+    <li><a href="{% url 'catalogue:detail' item.public_id %}">{{ item.title }}</a>
+      <small>{{ item.get_kind_display }}{% if item.year is not None %} · {{ item.year }}{% endif %}</small>
+    </li>
+  {% empty %}
+    <li>No items match this view.</li>
+  {% endfor %}
+</ul>
+{% include "components/pagination.html" %}
+{% endblock %}

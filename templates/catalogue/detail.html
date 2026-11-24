@@ -1,0 +1,27 @@
+{% extends "platform/base.html" %}
+{% block title %}{{ item.title }} | Lokam{% endblock %}
+{% block content %}
+<h1>{{ item.title }}</h1>
+<p><small>{{ item.get_kind_display }}{% if item.year is not None %} · {{ item.year }}{% endif %}</small></p>
+{% if item.description %}{{ item.description|linebreaks }}{% endif %}
+{% if item.public_credits %}
+  <section aria-labelledby="credits">
+    <h2 id="credits">Credits</h2>
+    <ul>{% for credit in item.public_credits %}
+      <li>{{ credit.get_role_display }} · <a href="{% url 'catalogue:detail' credit.person.item.public_id %}">{{ credit.person.item.title }}</a>{% if credit.detail %} · {{ credit.detail }}{% endif %}</li>
+    {% endfor %}</ul>
+  </section>
+{% endif %}
+{% if item.aliases.all %}
+  <section aria-labelledby="aliases">
+    <h2 id="aliases">Alternative names</h2>
+    <ul>{% for alias in item.aliases.all %}<li>{{ alias.title }}</li>{% endfor %}</ul>
+  </section>
+{% endif %}
+{% if item.tags.all %}
+  <section aria-labelledby="subjects">
+    <h2 id="subjects">Subjects</h2>
+    <ul>{% for tag in item.tags.all %}<li>{{ tag.term.label }}</li>{% endfor %}</ul>
+  </section>
+{% endif %}
+{% endblock %}
