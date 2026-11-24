@@ -2,6 +2,11 @@
 {% block title %}{{ item.title }} | Lokam{% endblock %}
 {% block content %}
 <h1>{{ item.title }}</h1>
+{% if user.is_authenticated %}
+<form method="post" action="{% url 'libraries:save-existing' item.public_id %}">
+  {% csrf_token %}<button type="submit">Save to your library</button>
+</form>
+{% endif %}
 <p><small>{{ item.get_kind_display }}{% if item.year is not None %} · {{ item.year }}{% endif %}</small></p>
 {% if item.description %}{{ item.description|linebreaks }}{% endif %}
 {% if item.public_credits %}

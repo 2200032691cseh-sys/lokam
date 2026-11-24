@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import AnonymousUser
+from django.core.paginator import Paginator
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.cache import never_cache
@@ -11,6 +12,7 @@ from django.views.decorators.http import (
 )
 
 from apps.core.policies import viewer_owns
+from apps.libraries.services import PAGE_KINDS, page_items
 
 from .forms import PageForm, ProfileForm
 from .models import PageKey
@@ -38,6 +40,11 @@ def website(request, username, page=PageKey.HOME):
     current = get_object_or_404(
         visible_pages(profile, viewer, include_disabled_for_owner=True), key=page
     )
+    item_page = None
+    if current.key in PAGE_KINDS:
+        item_page = Paginator(page_items(profile, viewer, current), 24).get_page(
+            request.GET.get("page")
+        )
     return render(
         request,
         "profiles/site.html",
@@ -47,6 +54,7 @@ def website(request, username, page=PageKey.HOME):
             "pages": visible_pages(profile, viewer),
             "owner": viewer_owns(viewer, profile.user_id),
             "preview": preview,
+            "item_page": item_page,
         },
     )
 

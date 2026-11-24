@@ -1,6 +1,6 @@
 # LOK-015 Personal library and acquisition
 
-**Status** Planned. Architecture and task authorization required before implementation.
+**Status** Complete. Local-first acquisition, repeat saves and personal record access passed PostgreSQL integration tests.
 
 ## Problem being solved
 

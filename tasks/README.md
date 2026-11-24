@@ -18,6 +18,7 @@
 | LOK-012 | Complete | Tests cover typed canonical items, Unicode aliases, public-only credits, pagination and the database prohibition on publishing owner-only records. |
 | LOK-013 | Complete | Verified exact identifier resolution, ISBN conversion and checksum, conflicting bindings, and revision-linked source credits. |
 | LOK-014 | Complete | Live book, film and TV reads passed with Open Library and Wikidata. Contract tests cover typed responses, rate limits and idempotent imports. |
+| LOK-015 | Complete | Browser entry points cover local-first search, signed external confirmation, manual fallback, idempotent saves, typed state and scoped library display. |
 
 LOK-017 tests the architecture end to end with one user. LOK-058 is optional. LOK-067 is private beta and LOK-068 is the public launch gate.
 

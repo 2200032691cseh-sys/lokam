@@ -1,0 +1,14 @@
+{% extends "platform/base.html" %}
+{% block title %}Saved items | Lokam{% endblock %}
+{% block content %}
+<h1>Saved items</h1>
+<p><a href="{% url 'libraries:add' %}">Add an item</a></p>
+<ul>
+  {% for saved in page_obj %}
+    <li><a href="{% url 'libraries:edit' saved.public_id %}">{{ saved.item.title }}</a> · {{ saved.get_state_display }}</li>
+  {% empty %}
+    <li>Saved items will appear here.</li>
+  {% endfor %}
+</ul>
+{% include "components/pagination.html" %}
+{% endblock %}
