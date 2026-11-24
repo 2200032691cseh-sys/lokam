@@ -1,6 +1,6 @@
 # LOK-003 Schema review
 
-**Status** Planned. Architecture and task authorization required before implementation.
+**Status** Complete. See the reviewed invariants in [database.md](../docs/database.md#schema-review-invariants).
 
 ## Problem being solved
 
