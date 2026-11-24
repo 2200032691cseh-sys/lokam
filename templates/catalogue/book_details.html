@@ -1,0 +1,23 @@
+{% if edition %}
+  <section aria-labelledby="publication">
+    <h2 id="publication">Edition details</h2>
+    <dl>
+      {% if edition.book.item.is_public and not edition.book.item.owner_id %}
+        <dt>Work</dt><dd><a href="{% url 'catalogue:detail' edition.book.item.public_id %}">{{ edition.book.item.title }}</a></dd>
+      {% endif %}
+      {% if edition.publisher %}<dt>Publisher</dt><dd>{{ edition.publisher }}</dd>{% endif %}
+      {% if edition.publication_label %}<dt>Publication</dt><dd>{{ edition.publication_label }}</dd>{% endif %}
+      {% if edition.format %}<dt>Format</dt><dd>{{ edition.format }}</dd>{% endif %}
+      {% if item.language %}<dt>Language code</dt><dd>{{ item.language }}</dd>{% endif %}
+      {% if isbns %}<dt>ISBN</dt><dd>{{ isbns|join:", " }}</dd>{% endif %}
+    </dl>
+  </section>
+{% endif %}
+{% if book_editions %}
+  <section aria-labelledby="edition-list">
+    <h2 id="edition-list">Editions</h2>
+    <ul>{% for edition in book_editions %}
+      <li><a href="{% url 'catalogue:detail' edition.item.public_id %}">{{ edition.item.title }}</a>{% if edition.publisher %} · {{ edition.publisher }}{% endif %}{% if edition.publication_label %} · {{ edition.publication_label }}{% endif %}</li>
+    {% endfor %}</ul>
+  </section>
+{% endif %}

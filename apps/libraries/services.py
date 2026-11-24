@@ -6,7 +6,9 @@ from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.db.models import Q
 
-from apps.catalogue.models import CatalogueItem, ItemKind, normalize_name
+from apps.catalogue.models import CatalogueItem, ItemKind, Predicate, normalize_name
+from apps.catalogue.relationships import supported_public_edges
+from apps.catalogue.services import public_items
 from apps.core.policies import access_filter
 from apps.integrations.adapters import Candidate
 from apps.integrations.persistence import import_candidate
@@ -117,3 +119,28 @@ def page_items(profile, viewer, page):
         )
         .order_by("item__title_key", "pk")
     )
+
+
+def filter_book_items(rows, *, state, query, favourite):
+    if state:
+        rows = rows.filter(state=state)
+    if favourite:
+        rows = rows.filter(favourite=True)
+    if not query:
+        return rows
+    names = public_items().filter(title_key__contains=query)
+    related = (
+        supported_public_edges()
+        .filter(
+            object__in=names,
+            predicate__in=[Predicate.FEATURES_CHARACTER, Predicate.SERIES],
+        )
+        .values("subject_id")
+    )
+    return rows.filter(
+        Q(item__title_key__contains=query)
+        | Q(item__aliases__title_key__contains=query)
+        | Q(item__credits__person__item__in=names)
+        | Q(item__tags__term__key__contains=query)
+        | Q(item_id__in=related)
+    ).distinct()

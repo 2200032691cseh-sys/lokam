@@ -1,6 +1,6 @@
 # LOK-020 Books
 
-**Status** Planned. Architecture and task authorization required before implementation.
+**Status** Complete. Verified the Books page, author and edition metadata, ISBNs, and personal annotations.
 
 ## Problem being solved
 

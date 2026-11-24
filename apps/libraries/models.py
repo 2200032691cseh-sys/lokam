@@ -73,3 +73,21 @@ class UserItem(models.Model):
                 name="libraries_valid_rating",
             ),
         ]
+
+
+class BookAnnotation(models.Model):
+    class Ownership(models.TextChoices):
+        OWNED = "owned", "Owned"
+        BORROWED = "borrowed", "Borrowed"
+        PREVIOUSLY_OWNED = "previously-owned", "Previously owned"
+
+    saved_item = models.OneToOneField(
+        UserItem, on_delete=models.CASCADE, related_name="book_annotation"
+    )
+    ownership = models.CharField(max_length=16, choices=Ownership.choices, blank=True)
+    personal_significance = models.TextField(max_length=2000, blank=True)
+    favourite_passage = models.CharField(max_length=280, blank=True)
+    passage_citation = models.CharField(max_length=240, blank=True)
+    favourite_character = models.ForeignKey(
+        CatalogueItem, on_delete=models.SET_NULL, null=True, blank=True
+    )

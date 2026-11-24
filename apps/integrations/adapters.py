@@ -24,6 +24,8 @@ class Candidate:
     year: int | None
     creators: tuple[str, ...] = ()
     revision: str = ""
+    authors: tuple[tuple[str, str], ...] = ()
+    subjects: tuple[str, ...] = ()
 
     @property
     def source_url(self):
@@ -67,6 +69,24 @@ def _open_library_row(row):
     creators = (
         tuple(filter(None, map(_title, names[:5]))) if isinstance(names, list) else ()
     )
+    authors = []
+    author_keys = row.get("author_key")
+    if (
+        isinstance(names, list)
+        and isinstance(author_keys, list)
+        and len(names) == len(author_keys)
+    ):
+        for name, key in zip(names[:5], author_keys[:5]):
+            if public_name := _title(name):
+                try:
+                    authors.append(
+                        (
+                            public_name,
+                            normalize_identifier(Namespace.OPEN_LIBRARY_AUTHOR, key),
+                        )
+                    )
+                except ValidationError:
+                    continue
     return Candidate(
         SourceProvider.OPEN_LIBRARY,
         Namespace.OPEN_LIBRARY_WORK,
@@ -75,6 +95,14 @@ def _open_library_row(row):
         title,
         _year(row.get("first_publish_year")),
         creators,
+        authors=tuple(authors),
+        subjects=tuple(
+            label
+            for raw in (row.get("subject") or [])[:8]
+            if isinstance(raw, str) and (label := _title(raw)[:100])
+        )
+        if isinstance(row.get("subject"), list)
+        else (),
     )
 
 
@@ -204,7 +232,7 @@ def search_external(kind, query, *, fetch=get_json):
             "/search.json",
             params={
                 "title": query,
-                "fields": "key,title,author_name,first_publish_year",
+                "fields": "key,title,author_name,author_key,first_publish_year,subject",
                 "limit": 10,
             },
             headers={"User-Agent": "Lokam/0.1"},

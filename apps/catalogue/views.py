@@ -5,7 +5,8 @@ from django.views.decorators.http import require_safe
 
 from apps.media.models import CatalogueImage
 
-from .models import ItemKind
+from .identifiers import Namespace
+from .models import BookEdition, ItemKind
 from .relationships import public_relations
 from .services import public_details, public_items
 
@@ -39,6 +40,25 @@ def detail(request, public_id):
         .order_by("pk")
         .first()
     )
+    book_editions = (
+        BookEdition.objects.filter(book__item=item, item__in=public_items())
+        .select_related("item")
+        .order_by("item__year", "item__title_key", "pk")[:24]
+        if item.kind == ItemKind.BOOK
+        else ()
+    )
+    edition = (
+        BookEdition.objects.select_related("book__item").filter(item=item).first()
+        if item.kind == ItemKind.BOOK_EDITION
+        else None
+    )
+    isbns = (
+        item.external_ids.filter(namespace=Namespace.ISBN).values_list(
+            "value", flat=True
+        )[:8]
+        if edition
+        else ()
+    )
     return render(
         request,
         "catalogue/detail.html",
@@ -46,6 +66,9 @@ def detail(request, public_id):
             "item": item,
             "relations": public_relations(item),
             "catalogue_image": image,
+            "book_editions": book_editions,
+            "edition": edition,
+            "isbns": isbns,
         },
     )
 

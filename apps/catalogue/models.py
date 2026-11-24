@@ -58,6 +58,9 @@ class CatalogueItem(models.Model):
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True
     )
 
+    def __str__(self):
+        return self.title
+
     class Meta:
         indexes = [
             models.Index(
@@ -110,6 +113,22 @@ class CatalogueAlias(models.Model):
         ):
             kwargs["update_fields"] = {*kwargs["update_fields"], "title_key"}
         super().save(*args, **kwargs)
+
+
+class Book(models.Model):
+    item = models.OneToOneField(
+        CatalogueItem, on_delete=models.CASCADE, related_name="book"
+    )
+
+
+class BookEdition(models.Model):
+    item = models.OneToOneField(
+        CatalogueItem, on_delete=models.CASCADE, related_name="edition"
+    )
+    book = models.ForeignKey(Book, on_delete=models.PROTECT, related_name="editions")
+    publisher = models.CharField(max_length=180, blank=True)
+    format = models.CharField(max_length=80, blank=True)
+    publication_label = models.CharField(max_length=80, blank=True)
 
 
 class Person(models.Model):

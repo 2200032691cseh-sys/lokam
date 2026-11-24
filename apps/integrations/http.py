@@ -20,7 +20,9 @@ HOSTS = {
     "commons-image": "commons.wikimedia.org",
 }
 PATHS = {
-    "open-library": re.compile(r"/(?:search\.json|works/OL[1-9][0-9]{0,15}W\.json)"),
+    "open-library": re.compile(
+        r"/(?:search\.json|works/OL[1-9][0-9]{0,15}W(?:\.json|/editions\.json))"
+    ),
     "wikidata-search": re.compile(r"/w/api\.php"),
     "wikidata-read": re.compile(r"/w/api\.php"),
     "commons-image": re.compile(r"/w/api\.php"),
