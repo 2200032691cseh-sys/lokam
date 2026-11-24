@@ -1,6 +1,6 @@
 # LOK-004 Provider due diligence
 
-**Status** Planned. Architecture and task authorization required before implementation.
+**Status** Complete. Official data and API documentation inform the [enablement gates](../docs/integrations.md#initial-adapter-gates). Runtime access and asset rights remain gated.
 
 ## Problem being solved
 
