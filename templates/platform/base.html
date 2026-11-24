@@ -1,0 +1,23 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Lokam{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/site.css' %}">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <nav class="document" aria-label="Main navigation">
+      <a class="brand" href="{% url 'landing' %}"{% if request.resolver_match.url_name == "landing" %} aria-current="page"{% endif %}>Lokam</a>
+      {% block navigation %}{% endblock %}
+    </nav>
+  </header>
+  <main id="main" class="document" tabindex="-1">
+    {% include "components/messages.html" %}
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

@@ -1,0 +1,7 @@
+{% if messages %}
+  <ul class="messages" aria-label="Site messages">
+    {% for message in messages %}
+      <li{% if message.tags == "error" %} role="alert"{% else %} role="status"{% endif %}>{{ message }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}

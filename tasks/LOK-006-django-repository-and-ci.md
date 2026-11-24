@@ -1,6 +1,6 @@
 # LOK-006 Django repository and CI
 
-**Status** Local verification passed. Check Linux CI before merging the bootstrap.
+**Status** Complete. Local and Linux CI checks passed before merge.
 
 ## Problem being solved
 
