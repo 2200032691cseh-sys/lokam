@@ -32,6 +32,7 @@
       <li>
         {{ candidate.title }}{% if candidate.year is not None %} · {{ candidate.year }}{% endif %}
         {% if candidate.creators %} · {{ candidate.creators|join:", " }}{% endif %}
+        {% if candidate.qualifier %} · {{ candidate.qualifier }}{% endif %}
         · <a href="{{ candidate.source_url }}">Source</a>
         <form method="post" action="{% url 'libraries:save-external' %}">
           {% csrf_token %}<input type="hidden" name="candidate" value="{{ token }}">

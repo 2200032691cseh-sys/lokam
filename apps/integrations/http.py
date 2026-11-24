@@ -20,6 +20,7 @@ HOSTS = {
     "wikidata-labels": "www.wikidata.org",
     "commons-image": "commons.wikimedia.org",
     "tvmaze": "api.tvmaze.com",
+    "musicbrainz": "musicbrainz.org",
 }
 PATHS = {
     "open-library": re.compile(
@@ -31,6 +32,9 @@ PATHS = {
     "commons-image": re.compile(r"/w/api\.php"),
     "tvmaze": re.compile(
         r"/(?:shows/[1-9][0-9]{0,11}|seasons/[1-9][0-9]{0,11}/episodes)"
+    ),
+    "musicbrainz": re.compile(
+        r"/ws/2/(?:artist|release-group|release|recording|work)(?:/[a-f0-9-]{36})?"
     ),
 }
 INTERVALS = {provider: 1 for provider in HOSTS}
@@ -129,7 +133,9 @@ def get_json(
                 extensions={"sni_hostname": host},
             ) as response,
         ):
-            if response.status_code == 429:
+            if response.status_code == 429 or (
+                response.status_code == 503 and "Retry-After" in response.headers
+            ):
                 value = response.headers.get("Retry-After", "")[:12]
                 delay = int(value) if value.isascii() and value.isdigit() else 60
                 record_result(provider, retry_after=max(1, delay))

@@ -10,7 +10,7 @@ from apps.catalogue.models import CatalogueItem, ItemKind, Predicate, normalize_
 from apps.catalogue.relationships import supported_public_edges
 from apps.catalogue.services import public_items
 from apps.core.policies import access_filter
-from apps.integrations.adapters import Candidate
+from apps.integrations.adapters import MUSIC_ENDPOINTS, Candidate
 from apps.integrations.persistence import import_candidate
 from apps.profiles.models import PageKey
 from apps.profiles.services import visible_pages
@@ -38,7 +38,7 @@ PAGE_KINDS = {
     PageKey.ACTIVITIES: {ItemKind.ACTIVITY},
     PageKey.LEARNING: {ItemKind.LEARNING},
 }
-EXTERNAL_KINDS = {ItemKind.BOOK, ItemKind.MOVIE, ItemKind.SHOW}
+EXTERNAL_KINDS = {ItemKind.BOOK, ItemKind.MOVIE, ItemKind.SHOW, *MUSIC_ENDPOINTS}
 CANDIDATE_SALT = "lokam.catalogue-candidate"
 
 
@@ -121,11 +121,13 @@ def page_items(profile, viewer, page):
     )
 
 
-def filter_saved_items(rows, *, state, query, favourite):
+def filter_saved_items(rows, *, state, query, favourite, music_kind=""):
     if state:
         rows = rows.filter(state=state)
     if favourite:
         rows = rows.filter(favourite=True)
+    if music_kind in MUSIC_ENDPOINTS:
+        rows = rows.filter(item__kind=music_kind)
     if not query:
         return rows
     names = public_items().filter(title_key__contains=query)

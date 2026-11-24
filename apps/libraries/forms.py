@@ -11,11 +11,13 @@ from apps.catalogue.models import (
 from apps.catalogue.relationships import supported_public_edges
 from apps.catalogue.services import public_items
 from apps.core.policies import Visibility
+from apps.integrations.adapters import MUSIC_ENDPOINTS
 
 from .models import (
     STATE_OPTIONS,
     BookAnnotation,
     MovieAnnotation,
+    MusicAnnotation,
     SaveState,
     TVAnnotation,
     UserItem,
@@ -152,6 +154,19 @@ class TVAnnotationForm(forms.ModelForm):
         )
 
 
+class MusicAnnotationForm(forms.ModelForm):
+    class Meta:
+        model = MusicAnnotation
+        fields = [
+            "mood",
+            "instruments",
+            "languages",
+            "musical_tradition",
+            "personal_associations",
+        ]
+        widgets = {"personal_associations": forms.Textarea(attrs={"rows": 3})}
+
+
 class LibraryFilterForm(forms.Form):
     state = forms.ChoiceField(required=False, label="Status")
     query = forms.CharField(
@@ -165,12 +180,29 @@ class LibraryFilterForm(forms.Form):
         super().__init__(*args, **kwargs)
         self.fields["state"].choices = [
             ("", "All items"),
-            *[(state.value, state.label) for state in STATE_OPTIONS[kind]],
+            *[
+                (state.value, state.label)
+                for state in STATE_OPTIONS.get(kind, [SaveState.INTEREST])
+            ],
         ]
         if kind in {ItemKind.MOVIE, ItemKind.SHOW}:
             self.fields[
                 "query"
             ].label = "Title, cast, director, genre, language or country"
+        if kind in MUSIC_ENDPOINTS:
+            self.fields["query"].label = "Title, artist, composer or subject"
+            self.fields["music_kind"] = forms.ChoiceField(
+                required=False,
+                label="Music type",
+                choices=[
+                    ("", "All music"),
+                    *[
+                        (value, name)
+                        for value, name in ItemKind.choices
+                        if value in MUSIC_ENDPOINTS
+                    ],
+                ],
+            )
 
     def clean_query(self):
         query = self.cleaned_data["query"]

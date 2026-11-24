@@ -26,6 +26,7 @@
 | LOK-020 | Complete | Books support filtered saved states, private literary annotations and separate editions. Verified author identity, ISBN normalization, repeat ingestion and a live Open Library edition response. |
 | LOK-021 | Complete | Verified film credits, release metadata, watch filters and private annotations. Live Wikidata enrichment returned a director and release date. |
 | LOK-022 | Complete | Verified exact Wikidata-to-TVmaze mapping, live seasons and episodes, private multiple favourites and absence of episode-completion states. |
+| LOK-023 | Complete | Verified MusicBrainz artist search and enrichment, distinct recordings and works, typed music filters, private associations and allowlisted listening links. Memories and playlists connect in LOK-033 and LOK-034. |
 
 LOK-017 tests the architecture end to end with one user. LOK-058 is optional. LOK-067 is private beta and LOK-068 is the public launch gate.
 

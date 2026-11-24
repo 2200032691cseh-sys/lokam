@@ -1,0 +1,39 @@
+{% if artist.artist_type %}<p>{{ artist.artist_type }}</p>{% endif %}
+{% if album.release_type %}<p>{{ album.release_type }}</p>{% endif %}
+{% if music_duration %}<p>Recording duration {{ music_duration }}</p>{% endif %}
+{% if music_release %}
+  <dl>
+    {% if music_release.album.item.is_public and not music_release.album.item.owner_id %}
+      <dt>Album</dt><dd><a href="{% url 'catalogue:detail' music_release.album.item.public_id %}">{{ music_release.album.item.title }}</a></dd>
+    {% endif %}
+    {% if music_release.release_date %}<dt>Release date</dt><dd>{{ music_release.release_date }}</dd>{% endif %}
+    {% if music_release.country %}<dt>Country code</dt><dd>{{ music_release.country }}</dd>{% endif %}
+  </dl>
+{% endif %}
+{% if music_recording.work.item.is_public and not music_recording.work.item.owner_id %}
+  <p>Recording of <a href="{% url 'catalogue:detail' music_recording.work.item.public_id %}">{{ music_recording.work.item.title }}</a></p>
+{% endif %}
+{% if music_releases %}
+  <section aria-labelledby="album-releases">
+    <h2 id="album-releases">Releases</h2>
+    <ul>{% for release in music_releases %}
+      <li><a href="{% url 'catalogue:detail' release.item.public_id %}">{{ release.item.title }}</a> {{ release.release_date }}</li>
+    {% endfor %}</ul>
+  </section>
+{% endif %}
+{% if work_recordings %}
+  <section aria-labelledby="work-recordings">
+    <h2 id="work-recordings">Recordings</h2>
+    <ul>{% for recording in work_recordings %}
+      <li><a href="{% url 'catalogue:detail' recording.item.public_id %}">{{ recording.item.title }}</a></li>
+    {% endfor %}</ul>
+  </section>
+{% endif %}
+{% if listening_links %}
+  <section aria-labelledby="listening">
+    <h2 id="listening">Listen</h2>
+    <ul>{% for service, url in listening_links %}
+      <li><a href="{{ url }}" rel="noreferrer">{{ service }}</a></li>
+    {% endfor %}</ul>
+  </section>
+{% endif %}

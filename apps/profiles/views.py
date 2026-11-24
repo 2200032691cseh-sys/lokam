@@ -32,6 +32,7 @@ FILTERABLE_PAGES = {
     PageKey.BOOKS: ItemKind.BOOK,
     PageKey.MOVIES: ItemKind.MOVIE,
     PageKey.TV: ItemKind.SHOW,
+    PageKey.MUSIC: ItemKind.MUSIC_RECORDING,
 }
 
 

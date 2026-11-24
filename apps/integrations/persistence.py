@@ -24,9 +24,12 @@ from apps.catalogue.services import (
 )
 from apps.jobs.services import enqueue
 
+from .musicbrainz import LICENSE, MUSIC_MODELS
+
 ATTRIBUTION = {
     SourceProvider.OPEN_LIBRARY: "Open Library catalogue metadata",
     SourceProvider.WIKIDATA: "CC0 structured data",
+    SourceProvider.MUSICBRAINZ: LICENSE,
 }
 
 
@@ -114,6 +117,10 @@ def _persist(candidate):
         TVShow.objects.get_or_create(item=item)
         if item.is_public:
             enqueue("enrich-tv", item.pk, f"enrich-tv:{item.pk}")
+    if candidate.provider == SourceProvider.MUSICBRAINZ and item.kind in MUSIC_MODELS:
+        MUSIC_MODELS[item.kind].objects.get_or_create(item=item)
+        if item.is_public:
+            enqueue("enrich-music", item.pk, f"enrich-music:{item.pk}")
     record_source(
         item,
         provider=candidate.provider,

@@ -12,6 +12,14 @@ SCREEN_CLASSES = {
     ItemKind.MOVIE: {"Q11424", "Q202866", "Q93204", "Q24862"},
     ItemKind.SHOW: {"Q5398426", "Q1259759", "Q15416"},
 }
+MUSIC_ENDPOINTS = {
+    ItemKind.MUSIC_ARTIST: ("artist", Namespace.MUSICBRAINZ_ARTIST),
+    ItemKind.MUSIC_ALBUM: ("release-group", Namespace.MUSICBRAINZ_GROUP),
+    ItemKind.MUSIC_RELEASE: ("release", Namespace.MUSICBRAINZ_RELEASE),
+    ItemKind.MUSIC_RECORDING: ("recording", Namespace.MUSICBRAINZ_RECORDING),
+    ItemKind.MUSICAL_WORK: ("work", Namespace.MUSICBRAINZ_WORK),
+}
+MUSIC_USER_AGENT = "Lokam/0.1 (https://github.com/2200032691cseh-sys/lokam)"
 
 
 @dataclass(frozen=True)
@@ -26,11 +34,14 @@ class Candidate:
     revision: str = ""
     authors: tuple[tuple[str, str], ...] = ()
     subjects: tuple[str, ...] = ()
+    qualifier: str = ""
 
     @property
     def source_url(self):
         if self.provider == SourceProvider.OPEN_LIBRARY:
             return f"https://openlibrary.org/works/{self.identifier}"
+        if self.provider == SourceProvider.MUSICBRAINZ:
+            return f"https://musicbrainz.org/{MUSIC_ENDPOINTS[self.kind][0]}/{self.identifier}"
         return f"https://www.wikidata.org/wiki/{self.identifier}"
 
 
@@ -242,6 +253,57 @@ def search_external(kind, query, *, fetch=get_json):
             for row in _rows(data, "docs")
             if (candidate := _open_library_row(row))
         ]
+    if kind in MUSIC_ENDPOINTS:
+        return _search_musicbrainz(kind, query, fetch)
     if kind not in {ItemKind.MOVIE, ItemKind.SHOW}:
         raise ValidationError("External search is unavailable for this catalogue type.")
     return _search_wikidata(kind, query, fetch)
+
+
+def _search_musicbrainz(kind, query, fetch):
+    endpoint, namespace = MUSIC_ENDPOINTS[kind]
+    phrase = query.replace("\\", "\\\\").replace('"', '\\"')
+    response = fetch(
+        SourceProvider.MUSICBRAINZ,
+        f"/ws/2/{endpoint}",
+        params={"query": f'"{phrase}"', "fmt": "json", "limit": 8},
+        headers={"User-Agent": MUSIC_USER_AGENT},
+    )
+    matches = []
+    for row in _rows(response, f"{endpoint}s"):
+        title = _title(row.get("name" if kind == ItemKind.MUSIC_ARTIST else "title"))
+        if not title:
+            continue
+        try:
+            identifier = normalize_identifier(namespace, row.get("id"))
+        except ValidationError:
+            continue
+        credit = row.get("artist-credit")
+        creators = (
+            tuple(
+                name
+                for entry in credit[:8]
+                if (name := _title(_object(entry).get("name")))
+            )
+            if isinstance(credit, list)
+            else ()
+        )
+        value = row.get("first-release-date") or row.get("date")
+        year = (
+            int(value[:4])
+            if isinstance(value, str) and re.match(r"^[0-9]{4}(?:-|$)", value)
+            else None
+        )
+        matches.append(
+            Candidate(
+                SourceProvider.MUSICBRAINZ,
+                namespace,
+                identifier,
+                kind,
+                title,
+                year,
+                creators,
+                qualifier=_title(row.get("disambiguation"))[:160],
+            )
+        )
+    return matches
