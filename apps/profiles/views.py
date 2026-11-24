@@ -28,7 +28,11 @@ from .services import (
     visible_profiles,
 )
 
-FILTERABLE_PAGES = {PageKey.BOOKS: ItemKind.BOOK, PageKey.MOVIES: ItemKind.MOVIE}
+FILTERABLE_PAGES = {
+    PageKey.BOOKS: ItemKind.BOOK,
+    PageKey.MOVIES: ItemKind.MOVIE,
+    PageKey.TV: ItemKind.SHOW,
+}
 
 
 @never_cache

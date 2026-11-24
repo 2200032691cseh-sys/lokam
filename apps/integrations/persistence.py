@@ -12,6 +12,7 @@ from apps.catalogue.models import (
     Movie,
     Person,
     SourceProvider,
+    TVShow,
     VocabularyTerm,
     normalize_name,
 )
@@ -109,6 +110,10 @@ def _persist(candidate):
         Movie.objects.get_or_create(item=item)
         if item.is_public:
             enqueue("enrich-screen", item.pk, f"enrich-screen:{item.pk}")
+    if candidate.provider == SourceProvider.WIKIDATA and item.kind == ItemKind.SHOW:
+        TVShow.objects.get_or_create(item=item)
+        if item.is_public:
+            enqueue("enrich-tv", item.pk, f"enrich-tv:{item.pk}")
     record_source(
         item,
         provider=candidate.provider,

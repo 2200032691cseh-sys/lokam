@@ -9,6 +9,7 @@ from .identifiers import Namespace
 from .models import BookEdition, ItemKind, Movie
 from .relationships import public_relations
 from .services import public_details, public_items
+from .television import television_context
 
 
 @never_cache
@@ -72,6 +73,7 @@ def detail(request, public_id):
             "movie": Movie.objects.filter(item=item).first()
             if item.kind == ItemKind.MOVIE
             else None,
+            **television_context(item, request.GET.get("page")),
         },
     )
 

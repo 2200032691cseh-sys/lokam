@@ -22,8 +22,9 @@ from .forms import (
     ManualItemForm,
     MovieAnnotationForm,
     SearchForm,
+    TVAnnotationForm,
 )
-from .models import BookAnnotation, MovieAnnotation, UserItem
+from .models import BookAnnotation, MovieAnnotation, TVAnnotation, UserItem
 from .services import (
     EXTERNAL_KINDS,
     available_items,
@@ -53,6 +54,7 @@ ANNOTATION_FORMS = {
         "movie",
         "Personal film details",
     ),
+    ItemKind.SHOW: (TVAnnotation, TVAnnotationForm, "tv", "Personal TV details"),
 }
 
 

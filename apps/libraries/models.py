@@ -100,3 +100,13 @@ class MovieAnnotation(models.Model):
     favourite_scene = models.TextField(max_length=1500, blank=True)
     favourite_performance = models.CharField(max_length=240, blank=True)
     favourite_dialogue = models.CharField(max_length=280, blank=True)
+
+
+class TVAnnotation(models.Model):
+    saved_item = models.OneToOneField(
+        UserItem, on_delete=models.CASCADE, related_name="tv_annotation"
+    )
+    favourite_seasons = models.ManyToManyField("catalogue.TVSeason", blank=True)
+    favourite_episodes = models.ManyToManyField("catalogue.TVEpisode", blank=True)
+    favourite_characters = models.ManyToManyField(CatalogueItem, blank=True)
+    favourite_relationships = models.TextField(max_length=1500, blank=True)

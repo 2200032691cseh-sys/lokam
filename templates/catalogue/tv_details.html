@@ -1,0 +1,32 @@
+{% if show %}
+  {% if show.premiere_date or show.languages or show.countries %}
+    <dl>
+      {% if show.premiere_date %}<dt>Premiere</dt><dd>{{ show.premiere_date|date:"j F Y" }}</dd>{% endif %}
+      {% if show.languages %}<dt>Languages</dt><dd>{{ show.languages }}</dd>{% endif %}
+      {% if show.countries %}<dt>Countries</dt><dd>{{ show.countries }}</dd>{% endif %}
+    </dl>
+  {% endif %}
+  {% if characters %}
+    <section aria-labelledby="tv-characters">
+      <h2 id="tv-characters">Characters</h2>
+      <ul>{% for character in characters %}
+        <li><a href="{% url 'catalogue:detail' character.public_id %}">{{ character.title }}</a></li>
+      {% endfor %}</ul>
+    </section>
+  {% endif %}
+{% elif season %}
+  <p><a href="{% url 'catalogue:detail' season.show.item.public_id %}">{{ season.show.item.title }}</a> · Season {{ season.number }}</p>
+  {% if season.premiere_date %}<p>Premiere {{ season.premiere_date|date:"j F Y" }}</p>{% endif %}
+{% elif episode %}
+  <p><a href="{% url 'catalogue:detail' episode.season.item.public_id %}">{{ episode.season.item.title }}</a>{% if episode.number is not None %} · Episode {{ episode.number }}{% endif %}</p>
+  {% if episode.air_date %}<p>First aired {{ episode.air_date|date:"j F Y" }}</p>{% endif %}
+{% endif %}
+{% if reference_page %}
+  <section aria-labelledby="tv-reference">
+    <h2 id="tv-reference">{% if show %}Seasons{% else %}Episodes{% endif %}</h2>
+    <ul>{% for record in reference_page %}
+      <li><a href="{% url 'catalogue:detail' record.item.public_id %}">{{ record.item.title }}</a></li>
+    {% endfor %}</ul>
+    {% include "components/pagination.html" with page_obj=reference_page %}
+  </section>
+{% endif %}

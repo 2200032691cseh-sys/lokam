@@ -1,6 +1,6 @@
 # LOK-022 TV Shows
 
-**Status** Planned. Architecture and task authorization required before implementation.
+**Status** Complete. Live seasons and episodes and private TV favourites passed verification.
 
 ## Problem being solved
 

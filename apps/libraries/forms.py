@@ -1,10 +1,25 @@
 from django import forms
 
-from apps.catalogue.models import CatalogueItem, ItemKind, Predicate, normalize_name
+from apps.catalogue.models import (
+    CatalogueItem,
+    ItemKind,
+    Predicate,
+    TVEpisode,
+    TVSeason,
+    normalize_name,
+)
 from apps.catalogue.relationships import supported_public_edges
+from apps.catalogue.services import public_items
 from apps.core.policies import Visibility
 
-from .models import STATE_OPTIONS, BookAnnotation, MovieAnnotation, SaveState, UserItem
+from .models import (
+    STATE_OPTIONS,
+    BookAnnotation,
+    MovieAnnotation,
+    SaveState,
+    TVAnnotation,
+    UserItem,
+)
 
 
 class SearchForm(forms.Form):
@@ -106,6 +121,37 @@ class MovieAnnotationForm(forms.ModelForm):
         }
 
 
+class TVAnnotationForm(forms.ModelForm):
+    class Meta:
+        model = TVAnnotation
+        fields = [
+            "favourite_seasons",
+            "favourite_episodes",
+            "favourite_characters",
+            "favourite_relationships",
+        ]
+        widgets = {"favourite_relationships": forms.Textarea(attrs={"rows": 3})}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        show_id = self.instance.saved_item.item_id
+        eligible = public_items()
+        seasons = TVSeason.objects.filter(
+            show__item_id=show_id, item__in=eligible
+        ).select_related("item")
+        episodes = TVEpisode.objects.filter(
+            season__in=seasons, item__in=eligible
+        ).select_related("item")
+        characters = eligible.filter(tvshowcharacter__show__item_id=show_id)
+        self.fields["favourite_seasons"].queryset = seasons.order_by("number")
+        self.fields["favourite_episodes"].queryset = episodes.order_by(
+            "season__number", "number", "pk"
+        )
+        self.fields["favourite_characters"].queryset = characters.order_by(
+            "title_key", "pk"
+        )
+
+
 class LibraryFilterForm(forms.Form):
     state = forms.ChoiceField(required=False, label="Status")
     query = forms.CharField(
@@ -121,7 +167,7 @@ class LibraryFilterForm(forms.Form):
             ("", "All items"),
             *[(state.value, state.label) for state in STATE_OPTIONS[kind]],
         ]
-        if kind == ItemKind.MOVIE:
+        if kind in {ItemKind.MOVIE, ItemKind.SHOW}:
             self.fields[
                 "query"
             ].label = "Title, cast, director, genre, language or country"
