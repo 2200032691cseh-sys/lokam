@@ -6,6 +6,8 @@ from django.shortcuts import redirect, render
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_http_methods, require_POST
 
+from apps.profiles.services import create_profile
+
 from .forms import EmailForm, LoginForm, NewPasswordForm, SignUpForm
 from .middleware import SESSION_GENERATION_KEY
 from .models import User
@@ -49,6 +51,7 @@ def signup(request):
                         password=form.cleaned_data["password"],
                     )
                     issue_mail(user, Purpose.VERIFY)
+                    create_profile(user)
             except IntegrityError as error:
                 diagnostic = getattr(error.__cause__, "diag", None)
                 if getattr(diagnostic, "constraint_name", None) not in {

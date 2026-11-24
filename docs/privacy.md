@@ -1,5 +1,7 @@
 # Privacy and authorization
 
+The profile and page visibility queries also constrain site navigation. Owners can preview the same personal content an anonymous visitor would see and manage a hidden page. Follower visibility stays restricted to owners until approved follow relationships are implemented. Changes apply to subsequent visitor requests.
+
 Default every personal object to private. Owners explicitly publish and preview Public or Approved followers visibility. Compose access across profile, origin page, container, record and rendered dependencies. A public collection can show a separately selected canonical item without exposing a private save. Disabled routes and their derived snippets stay hidden. Centralize scoped queries and action policies; apply them before counts, media reads, snippets, recommendations, export creation/download and conversational retrieval. Generic not-found responses reduce existence leaks. Moderators receive scoped case evidence. Admin access is purpose-scoped and audited.
 
 Block in either direction suppresses the other member's personal surfaces and cancels follows/requests. Serialize pair changes, check current access and invalidate derivative caches. Signed-out visitors to universally public pages cannot be identified as a blocked account. Use private no-store for revocable material and an authorization-checked media endpoint without persistent bearer URLs. Admit third-party links/media based on reviewed IP/referrer handling. Account deletion revokes access, jobs and media; see recovery for backup replay.

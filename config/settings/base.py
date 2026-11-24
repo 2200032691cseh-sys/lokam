@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "apps.accounts",
     "apps.jobs",
+    "apps.profiles",
 ]
 LOKAM_JOB_HANDLERS = {"account-mail": "apps.accounts.services.send_account_mail"}
 AUTH_USER_MODEL = "accounts.User"

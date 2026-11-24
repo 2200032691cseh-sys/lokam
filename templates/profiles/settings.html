@@ -1,0 +1,35 @@
+{% extends "platform/base.html" %}
+{% block title %}Profile settings | Lokam{% endblock %}
+{% block content %}
+<h1>Profile settings</h1>
+<p>Choose who can see your website. Each page also has its own visibility setting.</p>
+<form method="post">
+  {% csrf_token %}
+  {% include "components/form_fields.html" %}
+  <button type="submit">Save profile</button>
+</form>
+<p><a href="{% url 'profiles:home' user.username %}?preview=public">Preview your public home page</a></p>
+<section aria-labelledby="pages-title">
+  <h2 id="pages-title">Pages</h2>
+  <ol class="page-settings">
+    {% for item in profile.pages.all %}
+      <li>
+        <form method="post" action="{% url 'profiles:configure-page' item.key %}">
+          {% csrf_token %}
+          <fieldset>
+            <legend>{{ item.get_key_display }}</legend>
+            <label for="enabled-{{ item.key }}"><input id="enabled-{{ item.key }}" type="checkbox" name="enabled"{% if item.enabled %} checked{% endif %}> Enabled</label>
+            <label for="visibility-{{ item.key }}">Visibility</label>
+            <select name="visibility" id="visibility-{{ item.key }}">
+              {% for value,label in visibility_options %}<option value="{{ value }}"{% if item.visibility == value %} selected{% endif %}>{{ label }}</option>{% endfor %}
+            </select>
+            <button name="action" value="save">Save {{ item.get_key_display }}</button>
+            <button name="action" value="up"{% if forloop.first %} disabled{% endif %} aria-label="Move {{ item.get_key_display }} up">Move up</button>
+            <button name="action" value="down"{% if forloop.last %} disabled{% endif %} aria-label="Move {{ item.get_key_display }} down">Move down</button>
+          </fieldset>
+        </form>
+      </li>
+    {% endfor %}
+  </ol>
+</section>
+{% endblock %}
