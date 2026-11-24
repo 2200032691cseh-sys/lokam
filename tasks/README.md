@@ -9,6 +9,7 @@
 | LOK-003 | Complete | The database design records lock order, lossless merge rules, owner-scoped references and retry-safe erasure. Implementation and regression tests are in the dependent tasks. |
 | LOK-004 | Complete | Initial field rules, rights holds and enrollment gates are recorded in the integration plan. Provider enablement and live verification remain LOK-014 and LOK-016 checks. |
 | LOK-005 | Complete | Verified uv 0.13.9, CPython 3.13.18, locked dependency sync and a SCRAM-authenticated connection to PostgreSQL 17.12 on Windows. |
+| LOK-006 | Local verification passed | Django system checks and two configuration/database tests pass. Linux CI validates the same bootstrap on PostgreSQL 17. |
 
 LOK-017 tests the architecture end to end with one user. LOK-058 is optional. LOK-067 is private beta and LOK-068 is the public launch gate.
 

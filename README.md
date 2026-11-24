@@ -30,6 +30,13 @@ CREATE DATABASE lokam OWNER lokam;
 
 Set `LOKAM_DB_PASSWORD` and a unique `LOKAM_SECRET_KEY` in the ignored `.env` file. Keep PostgreSQL bound to loopback for local work. Development uses console email. Test the database login with `psql -h 127.0.0.1 -U lokam -d lokam -c "select 1"`. Run `uv run python scripts/check_docs.py` to verify the planning documents. The [testing plan](docs/testing.md) describes application checks.
 
+```powershell
+uv run --env-file .env python manage.py check
+uv run --env-file .env pytest --ds=config.settings.test
+uv run ruff check .
+uv run ruff format --check .
+```
+
 ## Deployment and limitations
 
 The [deployment plan](docs/deployment.md) covers the proposed environment configuration, provider setup and release gates. The [recovery plan](docs/recovery.md) describes backup and restore requirements. Hosting, live integrations and application performance remain unverified.
