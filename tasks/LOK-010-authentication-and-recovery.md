@@ -1,6 +1,6 @@
 # LOK-010 Authentication and recovery
 
-**Status** Planned. Architecture and task authorization required before implementation.
+**Status** Complete for local application behavior. External email delivery is a deployment requirement.
 
 ## Problem being solved
 

@@ -1,0 +1,7 @@
+{% extends "platform/base.html" %}
+{% block title %}Check your email | Lokam{% endblock %}
+{% block content %}
+<h1>Check your email</h1>
+<p>If the request can be completed, you’ll receive an email with the next step.</p>
+<p><a href="{% url 'accounts:login' %}">Return to log in</a></p>
+{% endblock %}

@@ -4,7 +4,7 @@ Lokam is a planned personal website and discovery tool for interests spread acro
 
 ## Status
 
-The product specification, approved architecture and implementation backlog are available. See the [task index](tasks/README.md) for verified implementation progress.
+The local application has a landing page, account registration and recovery using console email, and a PostgreSQL job runner. See the [task index](tasks/README.md) for verified implementation progress.
 
 ## Architecture
 
@@ -36,6 +36,8 @@ uv run --env-file .env pytest --ds=config.settings.test
 uv run ruff check .
 uv run ruff format --check .
 ```
+
+Start the local app with `uv run --env-file .env python manage.py migrate` and `uv run --env-file .env python manage.py runserver`. Run `uv run --env-file .env python manage.py run_jobs` in another terminal to deliver pending account mail. Use the local origin in `.env` for links printed by the console backend.
 
 ## Deployment and limitations
 

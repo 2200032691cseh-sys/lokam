@@ -1,0 +1,14 @@
+{% extends "platform/base.html" %}
+{% block title %}{{ title }} | Lokam{% endblock %}
+{% block content %}
+<h1>{{ title }}</h1>
+<form method="post">
+  {% csrf_token %}
+  {% include "components/form_fields.html" %}
+  <button type="submit">{{ submit }}</button>
+</form>
+{% if login_links %}
+  <p><a href="{% url 'accounts:recover' %}">Recover your account</a></p>
+  <p><a href="{% url 'accounts:resend' %}">Resend verification email</a></p>
+{% endif %}
+{% endblock %}
