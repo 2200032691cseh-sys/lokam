@@ -1,6 +1,6 @@
 # LOK-008 Custom identity
 
-**Status** Planned. Architecture and task authorization required before implementation.
+**Status** Complete. Initial migration, PostgreSQL constraints and password verification tested.
 
 ## Problem being solved
 
