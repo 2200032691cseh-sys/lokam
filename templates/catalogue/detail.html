@@ -24,4 +24,12 @@
     <ul>{% for tag in item.tags.all %}<li>{{ tag.term.label }}</li>{% endfor %}</ul>
   </section>
 {% endif %}
+{% if item.public_sources %}
+  <section aria-labelledby="sources">
+    <h2 id="sources">Sources</h2>
+    <ul>{% for source in item.public_sources %}
+      <li><a href="{{ source.source_url }}">{{ source.get_provider_display }}</a> · {{ source.licence }}</li>
+    {% endfor %}</ul>
+  </section>
+{% endif %}
 {% endblock %}

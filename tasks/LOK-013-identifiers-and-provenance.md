@@ -1,6 +1,6 @@
 # LOK-013 Identifiers and provenance
 
-**Status** Planned. Architecture and task authorization required before implementation.
+**Status** Complete. Verified exact resolution, namespace conflicts and source credits on PostgreSQL.
 
 ## Problem being solved
 
