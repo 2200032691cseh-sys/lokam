@@ -29,7 +29,9 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "apps.accounts",
+    "apps.jobs",
 ]
+LOKAM_JOB_HANDLERS = {}
 AUTH_USER_MODEL = "accounts.User"
 PASSWORD_HASHERS = [
     "django.contrib.auth.hashers.Argon2PasswordHasher",
