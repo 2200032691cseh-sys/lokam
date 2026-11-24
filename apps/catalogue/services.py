@@ -47,6 +47,9 @@ PROVENANCE_FIELDS = {
     "description",
     "relationship",
     "image",
+    "publisher",
+    "format",
+    "publication",
 }
 
 

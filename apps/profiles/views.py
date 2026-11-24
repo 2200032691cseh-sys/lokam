@@ -12,7 +12,8 @@ from django.views.decorators.http import (
 )
 
 from apps.core.policies import viewer_owns
-from apps.libraries.services import PAGE_KINDS, page_items
+from apps.libraries.forms import BookFilterForm
+from apps.libraries.services import PAGE_KINDS, filter_book_items, page_items
 from apps.media.views import image_response
 
 from .forms import PageForm, ProfileForm
@@ -45,10 +46,14 @@ def website(request, username, page=PageKey.HOME):
         visible_pages(profile, viewer, include_disabled_for_owner=True), key=page
     )
     item_page = None
+    book_filter = None
     if current.key in PAGE_KINDS:
-        item_page = Paginator(page_items(profile, viewer, current), 24).get_page(
-            request.GET.get("page")
-        )
+        rows = page_items(profile, viewer, current)
+        if current.key == PageKey.BOOKS:
+            book_filter = BookFilterForm(request.GET or None)
+            if book_filter.is_valid():
+                rows = filter_book_items(rows, **book_filter.cleaned_data)
+        item_page = Paginator(rows, 24).get_page(request.GET.get("page"))
     return render(
         request,
         "profiles/site.html",
@@ -59,6 +64,7 @@ def website(request, username, page=PageKey.HOME):
             "owner": viewer_owns(viewer, profile.user_id),
             "preview": preview,
             "item_page": item_page,
+            "book_filter": book_filter,
             **(home_features(profile, viewer) if current.key == PageKey.HOME else {}),
         },
     )

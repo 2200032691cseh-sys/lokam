@@ -1,9 +1,10 @@
 from django import forms
 
-from apps.catalogue.models import ItemKind, normalize_name
+from apps.catalogue.models import CatalogueItem, ItemKind, Predicate, normalize_name
+from apps.catalogue.relationships import supported_public_edges
 from apps.core.policies import Visibility
 
-from .models import STATE_OPTIONS, SaveState, UserItem
+from .models import STATE_OPTIONS, BookAnnotation, SaveState, UserItem
 
 
 class SearchForm(forms.Form):
@@ -63,3 +64,54 @@ class ItemSettingsForm(forms.ModelForm):
             self.fields["visibility"].choices = [
                 (Visibility.PRIVATE, Visibility.PRIVATE.label)
             ]
+
+
+class BookAnnotationForm(forms.ModelForm):
+    class Meta:
+        model = BookAnnotation
+        fields = [
+            "ownership",
+            "personal_significance",
+            "favourite_passage",
+            "passage_citation",
+            "favourite_character",
+        ]
+        widgets = {"personal_significance": forms.Textarea(attrs={"rows": 3})}
+        help_texts = {
+            "favourite_passage": "Keep quotations short. Your passage stays private."
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        item = self.instance.saved_item.item
+        edition = getattr(item, "edition", None)
+        work_id = edition.book.item_id if edition else item.pk
+        ids = (
+            supported_public_edges()
+            .filter(subject_id=work_id, predicate=Predicate.FEATURES_CHARACTER)
+            .values("object_id")
+        )
+        self.fields["favourite_character"].queryset = CatalogueItem.objects.filter(
+            pk__in=ids
+        ).order_by("title_key", "pk")
+
+
+class BookFilterForm(forms.Form):
+    state = forms.ChoiceField(
+        required=False,
+        label="Reading status",
+        choices=[
+            ("", "All books"),
+            *[(state.value, state.label) for state in STATE_OPTIONS[ItemKind.BOOK]],
+        ],
+    )
+    query = forms.CharField(
+        label="Title, author, genre, theme, character or series",
+        required=False,
+        max_length=120,
+    )
+    favourite = forms.BooleanField(label="Favourites only", required=False)
+
+    def clean_query(self):
+        query = self.cleaned_data["query"]
+        return normalize_name(query) if query else ""

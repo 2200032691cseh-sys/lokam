@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
 from django.core.signing import BadSignature
+from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import (
@@ -11,11 +12,12 @@ from django.views.decorators.http import (
     require_safe,
 )
 
+from apps.catalogue.models import ItemKind
 from apps.integrations.adapters import search_external
 from apps.integrations.http import ProviderUnavailable
 
-from .forms import ItemSettingsForm, ManualItemForm, SearchForm
-from .models import UserItem
+from .forms import BookAnnotationForm, ItemSettingsForm, ManualItemForm, SearchForm
+from .models import BookAnnotation, UserItem
 from .services import (
     EXTERNAL_KINDS,
     available_items,
@@ -107,18 +109,31 @@ def manual(request):
 @never_cache
 @login_required
 @require_http_methods(["GET", "POST"])
+@transaction.atomic
 def edit(request, saved_id):
-    saved = get_object_or_404(
-        UserItem.objects.select_related("item"), owner=request.user, public_id=saved_id
-    )
-    form = ItemSettingsForm(
-        request.POST if request.method == "POST" else None, instance=saved
-    )
-    if form.is_valid():
+    rows = UserItem.objects.select_related("item")
+    if request.method == "POST":
+        rows = rows.select_for_update(of=("self",))
+    saved = get_object_or_404(rows, owner=request.user, public_id=saved_id)
+    data = request.POST if request.method == "POST" else None
+    form = ItemSettingsForm(data, instance=saved)
+    book_form = None
+    if saved.item.kind in {ItemKind.BOOK, ItemKind.BOOK_EDITION}:
+        annotation = BookAnnotation.objects.filter(
+            saved_item=saved
+        ).first() or BookAnnotation(saved_item=saved)
+        book_form = BookAnnotationForm(data, prefix="book", instance=annotation)
+    if form.is_valid() and (book_form is None or book_form.is_valid()):
         form.save()
+        if book_form is not None and book_form.has_changed():
+            book_form.save()
         messages.success(request, "Saved item updated.")
         return redirect("libraries:edit", saved.public_id)
-    return render(request, "libraries/edit.html", {"saved": saved, "form": form})
+    return render(
+        request,
+        "libraries/edit.html",
+        {"saved": saved, "form": form, "book_form": book_form},
+    )
 
 
 @never_cache
