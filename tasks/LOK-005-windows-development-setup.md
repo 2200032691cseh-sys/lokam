@@ -1,6 +1,6 @@
 # LOK-005 Windows development setup
 
-**Status** Planned. Architecture and task authorization required before implementation.
+**Status** Complete. Verified dependency sync and a local Windows PostgreSQL connection. See [local setup](../README.md#local-setup-and-testing).
 
 ## Problem being solved
 

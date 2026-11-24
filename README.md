@@ -4,15 +4,31 @@ Lokam is a planned personal website and discovery tool for interests spread acro
 
 ## Status
 
-The product specification, architecture proposal and implementation backlog are available. Application features and screenshots will be added as implementation progresses.
+The product specification, approved architecture and implementation backlog are available. See the [task index](tasks/README.md) for verified implementation progress.
 
 ## Architecture
 
-The proposal uses Django 5.2 LTS, Python 3.13, PostgreSQL 17, Django templates and plain CSS. A shared catalogue holds canonical information. User-owned records hold saves, annotations and sharing preferences. PostgreSQL also supports search, graph relationships and bounded background work. See the [architecture](docs/architecture.md), [decision register](docs/decisions/README.md) and [database design](docs/database.md).
+The architecture uses Django 5.2 LTS, Python 3.13, PostgreSQL 17, Django templates and plain CSS. A shared catalogue holds canonical information. User-owned records hold saves, annotations and sharing preferences. PostgreSQL also supports search, graph relationships and bounded background work. See the [architecture](docs/architecture.md), [decision register](docs/decisions/README.md) and [database design](docs/database.md).
 
 ## Local setup and testing
 
-Clone the private repository with an account that has access. The planning baseline has no runtime dependencies or environment variables. Run `python scripts/check_docs.py` from the repository root to check task structure, dependencies and local documentation links. The same check runs in CI. The [testing plan](docs/testing.md) describes the application test suites.
+Install [uv](https://docs.astral.sh/uv/getting-started/installation/) and [PostgreSQL 17](https://www.postgresql.org/download/windows/). Clone the repository, then install the locked development dependencies.
+
+```powershell
+uv python install 3.13
+uv sync --locked
+Copy-Item .env.example .env
+```
+
+Create the local database using an administrative PostgreSQL login. Run the following at a `psql` prompt. The local test runner needs `CREATEDB` to manage test databases.
+
+```sql
+CREATE ROLE lokam LOGIN CREATEDB;
+\password lokam
+CREATE DATABASE lokam OWNER lokam;
+```
+
+Set `LOKAM_DB_PASSWORD` and a unique `LOKAM_SECRET_KEY` in the ignored `.env` file. Keep PostgreSQL bound to loopback for local work. Development uses console email. Test the database login with `psql -h 127.0.0.1 -U lokam -d lokam -c "select 1"`. Run `uv run python scripts/check_docs.py` to verify the planning documents. The [testing plan](docs/testing.md) describes application checks.
 
 ## Deployment and limitations
 
