@@ -1,6 +1,6 @@
 # LOK-014 Provider adapters for books and screen
 
-**Status** Planned. Architecture and task authorization required before implementation.
+**Status** Complete. Live Open Library book search and Wikidata film and TV search passed.
 
 ## Problem being solved
 
@@ -20,7 +20,7 @@ Read the approved [architecture](../docs/architecture.md) and [database](../docs
 
 ## Scope
 
-Implement HTTPX contracts and Open Library/TMDB permitted search and import.
+Implement HTTPX contracts and Open Library and Wikidata permitted search and import.
 
 ## Explicitly excluded scope
 
@@ -41,7 +41,7 @@ No additional tables planned. Review existing constraints and indexes.
 ## Implementation instructions
 
 1. Verify the named dependencies and identify the affected model, service, route or operator workflow.
-2. Implement HTTPX contracts and Open Library/TMDB permitted search and import.
+2. Implement HTTPX contracts and Open Library and Wikidata permitted search and import.
 3. Verify the workflow through its normal entry point and record the evidence.
 
 ## Security considerations

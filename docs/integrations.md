@@ -5,7 +5,7 @@ Official documentation reviewed November 24, 2026. This is a document review. Ac
 | Provider | Documented capability and design consequence |
 |---|---|
 | Open Library | Works, editions, authors, subjects, ISBN/search and cover references. Default 1 request/s or 3 with identification. Target low volume, no bulk API harvesting. Verify cover delivery rights separately. [API](https://openlibrary.org/developers/api) |
-| TMDB | Movies, TV, credits, posters, seasons and recommendations. Noncommercial API access requires attribution. Commercial use requires a licence discussion. Verify attribution text/logo, current throttling, permitted caching and delivery before enabling. [FAQ](https://developer.themoviedb.org/docs/faq) |
+| Screen metadata | Wikidata entity search and structured claims provide film and TV metadata without credentials. Coverage varies for episodes, artwork and provider suggestions. [Data access](https://www.wikidata.org/wiki/Wikidata:Data_access) |
 | MusicBrainz and Cover Art Archive | MusicBrainz supports artists, releases, recordings, works and relations. Use an identifying agent and 1 request/s, and verify commercial terms and field-level data licence. Cover Art Archive supplies references; check copyright before public display or copying. [API](https://musicbrainz.org/doc/MusicBrainz_API) · [Cover archive](https://musicbrainz.org/doc/Cover_Art_Archive) |
 | Wikidata | Principal external structured graph. Target QIDs and known properties; record statement IDs, qualifiers, rank, sources and revision. Structured data is CC0. Wikidata statement presence alone does not establish fact; review predicate and evidence, especially disputed history. Avoid live heavy SPARQL in requests. [Data access](https://www.wikidata.org/wiki/Wikidata:Data_access) |
 | Wikipedia, Wikivoyage, Wiktionary, Commons | Prefer source links; copied summaries or text need attribution and applicable share-alike verification. Check each Commons file's licence, attribution and restrictions. [Wikimedia terms](https://foundation.wikimedia.org/wiki/Policy:Terms_of_Use) · [Commons reuse](https://commons.wikimedia.org/wiki/Commons:Reusing_content_outside_Wikimedia) |
@@ -21,10 +21,12 @@ Adapters use a common typed candidate schema and per-provider auth, allowlists, 
 
 ## Initial adapter gates
 
+The adapters support Open Library work search and Wikidata film and TV search. They validate entity classes and record the selected title, year and source revision. Run `uv run --env-file .env python manage.py check_catalogue_provider book` and repeat for `movie` and `tv-show` to verify live reads without saving catalogue records.
+
 | Source | Fields eligible for initial ingestion | Held pending verification |
 |---|---|---|
 | Open Library | Work and edition IDs, ISBN, title, authors, publication year, language and factual subject references, with source provenance. Use at most one request per second until a maintainer contact is configured. | Long descriptions and cover redisplay or storage pending field and asset rights review. [Licensing](https://openlibrary.org/developers/licensing) |
-| TMDB | After enrollment and terms review, ingest film/TV identifiers, title, release year and credited names within the approved policy. Respect HTTP 429. | Credentialed smoke check, caching, redistribution/export and poster delivery. Start disabled. [Rate limiting](https://developer.themoviedb.org/docs/rate-limiting) · [Image delivery](https://developer.themoviedb.org/docs/image-basics) |
+| Film and TV via Wikidata | Persist matched QIDs, labels, release years and source revisions. | Credits, episode coverage and images require field-specific enrichment. Wikidata does not supply editorial recommendations. [Licensing](https://www.wikidata.org/wiki/Wikidata:Licensing) |
 | Wikidata | QIDs, labels and targeted CC0 statements, references and qualifiers. | Individual graph assertions need evidence review. Linked images and third-party source text retain separate rights. [Licensing](https://www.wikidata.org/wiki/Wikidata:Licensing) |
 
 Only persist fields whose policy is recorded. Attach source identifiers and retrieval time. Exclude provider payloads from personal export unless redistribution is expressly permitted. Live credentials and terms acceptance must precede credentialed source enablement.

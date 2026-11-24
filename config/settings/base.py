@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     "apps.jobs",
     "apps.profiles",
     "apps.catalogue",
+    "apps.integrations",
 ]
 LOKAM_JOB_HANDLERS = {"account-mail": "apps.accounts.services.send_account_mail"}
 AUTH_USER_MODEL = "accounts.User"
