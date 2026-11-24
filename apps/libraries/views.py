@@ -13,7 +13,7 @@ from django.views.decorators.http import (
 )
 
 from apps.catalogue.models import ItemKind
-from apps.integrations.adapters import search_external
+from apps.integrations.adapters import MUSIC_ENDPOINTS, search_external
 from apps.integrations.http import ProviderUnavailable
 
 from .forms import (
@@ -21,10 +21,17 @@ from .forms import (
     ItemSettingsForm,
     ManualItemForm,
     MovieAnnotationForm,
+    MusicAnnotationForm,
     SearchForm,
     TVAnnotationForm,
 )
-from .models import BookAnnotation, MovieAnnotation, TVAnnotation, UserItem
+from .models import (
+    BookAnnotation,
+    MovieAnnotation,
+    MusicAnnotation,
+    TVAnnotation,
+    UserItem,
+)
 from .services import (
     EXTERNAL_KINDS,
     available_items,
@@ -55,6 +62,10 @@ ANNOTATION_FORMS = {
         "Personal film details",
     ),
     ItemKind.SHOW: (TVAnnotation, TVAnnotationForm, "tv", "Personal TV details"),
+    **{
+        kind: (MusicAnnotation, MusicAnnotationForm, "music", "Personal music details")
+        for kind in MUSIC_ENDPOINTS
+    },
 }
 
 

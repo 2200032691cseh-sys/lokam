@@ -203,6 +203,70 @@ class TVShowCharacter(models.Model):
         ]
 
 
+class MusicArtist(models.Model):
+    item = models.OneToOneField(
+        CatalogueItem, on_delete=models.CASCADE, related_name="music_artist"
+    )
+    artist_type = models.CharField(max_length=60, blank=True)
+
+
+class MusicAlbum(models.Model):
+    item = models.OneToOneField(
+        CatalogueItem, on_delete=models.CASCADE, related_name="music_album"
+    )
+    release_type = models.CharField(max_length=60, blank=True)
+
+
+class MusicRelease(models.Model):
+    item = models.OneToOneField(
+        CatalogueItem, on_delete=models.CASCADE, related_name="music_release"
+    )
+    album = models.ForeignKey(
+        MusicAlbum,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="releases",
+    )
+    release_date = models.CharField(max_length=24, blank=True)
+    country = models.CharField(max_length=24, blank=True)
+
+
+class MusicalWork(models.Model):
+    item = models.OneToOneField(
+        CatalogueItem, on_delete=models.CASCADE, related_name="musical_work"
+    )
+
+
+class MusicRecording(models.Model):
+    item = models.OneToOneField(
+        CatalogueItem, on_delete=models.CASCADE, related_name="music_recording"
+    )
+    work = models.ForeignKey(
+        MusicalWork,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="recordings",
+    )
+    duration_ms = models.PositiveIntegerField(null=True, blank=True)
+
+
+class MusicLink(models.Model):
+    item = models.ForeignKey(
+        CatalogueItem, on_delete=models.CASCADE, related_name="music_links"
+    )
+    service = models.CharField(max_length=40)
+    url = models.URLField(max_length=500)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["item", "url"], name="catalogue_unique_music_link"
+            )
+        ]
+
+
 class Person(models.Model):
     item = models.OneToOneField(
         CatalogueItem, on_delete=models.CASCADE, related_name="person"

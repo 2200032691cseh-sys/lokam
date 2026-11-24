@@ -110,3 +110,14 @@ class TVAnnotation(models.Model):
     favourite_episodes = models.ManyToManyField("catalogue.TVEpisode", blank=True)
     favourite_characters = models.ManyToManyField(CatalogueItem, blank=True)
     favourite_relationships = models.TextField(max_length=1500, blank=True)
+
+
+class MusicAnnotation(models.Model):
+    saved_item = models.OneToOneField(
+        UserItem, on_delete=models.CASCADE, related_name="music_annotation"
+    )
+    mood = models.CharField(max_length=120, blank=True)
+    instruments = models.CharField(max_length=240, blank=True)
+    languages = models.CharField(max_length=160, blank=True)
+    musical_tradition = models.CharField(max_length=160, blank=True)
+    personal_associations = models.TextField(max_length=1500, blank=True)

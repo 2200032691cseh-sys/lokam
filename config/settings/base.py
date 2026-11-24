@@ -44,6 +44,7 @@ LOKAM_JOB_HANDLERS = {
     "enrich-screen": "apps.integrations.screen_metadata.enrich_screen_job",
     "enrich-tv": "apps.integrations.tvmaze.enrich_show_job",
     "enrich-tv-season": "apps.integrations.tvmaze.enrich_season_job",
+    "enrich-music": "apps.integrations.musicbrainz.enrich_music_job",
 }
 AUTH_USER_MODEL = "accounts.User"
 AUTHENTICATION_BACKENDS = ["apps.accounts.backends.VerifiedEmailBackend"]

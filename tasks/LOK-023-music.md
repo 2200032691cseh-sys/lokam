@@ -1,6 +1,6 @@
 # LOK-023 Music
 
-**Status** Planned. Architecture and task authorization required before implementation.
+**Status** Complete for music catalogue, discovery input and personal annotations. Memories and playlists connect in their owning tasks.
 
 ## Problem being solved
 

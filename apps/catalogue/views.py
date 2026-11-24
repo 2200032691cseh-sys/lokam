@@ -7,6 +7,7 @@ from apps.media.models import CatalogueImage
 
 from .identifiers import Namespace
 from .models import BookEdition, ItemKind, Movie
+from .music import music_context
 from .relationships import public_relations
 from .services import public_details, public_items
 from .television import television_context
@@ -74,6 +75,7 @@ def detail(request, public_id):
             if item.kind == ItemKind.MOVIE
             else None,
             **television_context(item, request.GET.get("page")),
+            **music_context(item),
         },
     )
 
