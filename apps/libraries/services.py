@@ -121,7 +121,7 @@ def page_items(profile, viewer, page):
     )
 
 
-def filter_book_items(rows, *, state, query, favourite):
+def filter_saved_items(rows, *, state, query, favourite):
     if state:
         rows = rows.filter(state=state)
     if favourite:
@@ -142,5 +142,7 @@ def filter_book_items(rows, *, state, query, favourite):
         | Q(item__aliases__title_key__contains=query)
         | Q(item__credits__person__item__in=names)
         | Q(item__tags__term__key__contains=query)
+        | Q(item__movie__languages__icontains=query)
+        | Q(item__movie__countries__icontains=query)
         | Q(item_id__in=related)
     ).distinct()

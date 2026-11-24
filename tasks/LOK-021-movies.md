@@ -1,6 +1,6 @@
 # LOK-021 Movies
 
-**Status** Planned. Architecture and task authorization required before implementation.
+**Status** Complete. Film library, typed details, annotations and live credits passed verification.
 
 ## Problem being solved
 

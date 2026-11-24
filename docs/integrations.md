@@ -23,6 +23,8 @@ Adapters use a common typed candidate schema and per-provider auth, allowlists, 
 
 Book selection persists matched Open Library author identifiers and factual subjects. A bounded job loads up to eight editions, including publication details, language codes and valid ISBNs. Conflicting identifiers are left for review. Readiness of a work does not depend on the edition job, so a failed enrichment leaves the saved book usable.
 
+Film selection queues a Wikidata enrichment job for the first documented release, countries, languages, genres and sample credits. Credits are attached by QID, with the entity revision recorded. Missing fields are omitted and a failed enrichment does not prevent saving the film.
+
 Use `uv run --env-file .env python manage.py sync_catalogue_edges Q170583 Q270385` to import a bounded batch when the corresponding catalogue records are present. The importer joins on stable identifiers and records statement IDs, source revisions, rank and qualifier property names. Review the statement and its endpoints before running `verify_catalogue_edge <id> --reviewed`. Unreviewed assertions and edges lacking visible evidence are excluded from factual display.
 
 The adapters support Open Library work search and Wikidata film and TV search. They validate entity classes and record the selected title, year and source revision. Run `uv run --env-file .env python manage.py check_catalogue_provider book` and repeat for `movie` and `tv-show` to verify live reads without saving catalogue records.

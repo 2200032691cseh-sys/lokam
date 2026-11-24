@@ -11,9 +11,10 @@ from django.views.decorators.http import (
     require_safe,
 )
 
+from apps.catalogue.models import ItemKind
 from apps.core.policies import viewer_owns
-from apps.libraries.forms import BookFilterForm
-from apps.libraries.services import PAGE_KINDS, filter_book_items, page_items
+from apps.libraries.forms import LibraryFilterForm
+from apps.libraries.services import PAGE_KINDS, filter_saved_items, page_items
 from apps.media.views import image_response
 
 from .forms import PageForm, ProfileForm
@@ -26,6 +27,8 @@ from .services import (
     visible_pages,
     visible_profiles,
 )
+
+FILTERABLE_PAGES = {PageKey.BOOKS: ItemKind.BOOK, PageKey.MOVIES: ItemKind.MOVIE}
 
 
 @never_cache
@@ -46,13 +49,13 @@ def website(request, username, page=PageKey.HOME):
         visible_pages(profile, viewer, include_disabled_for_owner=True), key=page
     )
     item_page = None
-    book_filter = None
+    library_filter = None
     if current.key in PAGE_KINDS:
         rows = page_items(profile, viewer, current)
-        if current.key == PageKey.BOOKS:
-            book_filter = BookFilterForm(request.GET or None)
-            if book_filter.is_valid():
-                rows = filter_book_items(rows, **book_filter.cleaned_data)
+        if kind := FILTERABLE_PAGES.get(current.key):
+            library_filter = LibraryFilterForm(request.GET or None, kind=kind)
+            if library_filter.is_valid():
+                rows = filter_saved_items(rows, **library_filter.cleaned_data)
         item_page = Paginator(rows, 24).get_page(request.GET.get("page"))
     return render(
         request,
@@ -64,7 +67,7 @@ def website(request, username, page=PageKey.HOME):
             "owner": viewer_owns(viewer, profile.user_id),
             "preview": preview,
             "item_page": item_page,
-            "book_filter": book_filter,
+            "library_filter": library_filter,
             **(home_features(profile, viewer) if current.key == PageKey.HOME else {}),
         },
     )

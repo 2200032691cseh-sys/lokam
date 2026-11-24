@@ -24,6 +24,7 @@
 | LOK-018 | Complete | Verified private upload, EXIF removal, responsive variants, cross-user denial, quota checks and deletion. Live Commons lookup verified attribution and thumbnail URL handling. |
 | LOK-019 | Complete | Verified owner-only avatar selection, explicit photograph sharing, immediate revocation, selected favourites and the origin-page visibility gate on Home. |
 | LOK-020 | Complete | Books support filtered saved states, private literary annotations and separate editions. Verified author identity, ISBN normalization, repeat ingestion and a live Open Library edition response. |
+| LOK-021 | Complete | Verified film credits, release metadata, watch filters and private annotations. Live Wikidata enrichment returned a director and release date. |
 
 LOK-017 tests the architecture end to end with one user. LOK-058 is optional. LOK-067 is private beta and LOK-068 is the public launch gate.
 

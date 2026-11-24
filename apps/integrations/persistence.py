@@ -9,6 +9,7 @@ from apps.catalogue.models import (
     ItemKind,
     ItemPersonRole,
     ItemTag,
+    Movie,
     Person,
     SourceProvider,
     VocabularyTerm,
@@ -104,6 +105,10 @@ def _persist(candidate):
             fields.append("subjects")
         if item.is_public:
             enqueue("enrich-book", item.pk, f"enrich-book:{item.pk}")
+    if candidate.provider == SourceProvider.WIKIDATA and item.kind == ItemKind.MOVIE:
+        Movie.objects.get_or_create(item=item)
+        if item.is_public:
+            enqueue("enrich-screen", item.pk, f"enrich-screen:{item.pk}")
     record_source(
         item,
         provider=candidate.provider,

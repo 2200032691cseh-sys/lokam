@@ -7,9 +7,9 @@
 {% if saved.item.is_public %}<p><a href="{% url 'catalogue:detail' saved.item.public_id %}">Catalogue details</a></p>{% endif %}
 <form method="post">
   {% csrf_token %}{% include "components/form_fields.html" %}
-  {% if book_form %}
-    <fieldset><legend>Personal book details</legend>
-      {% include "components/form_fields.html" with form=book_form %}
+  {% if annotation_form %}
+    <fieldset><legend>{{ annotation_heading }}</legend>
+      {% include "components/form_fields.html" with form=annotation_form %}
     </fieldset>
   {% endif %}
   <button type="submit">Save changes</button>

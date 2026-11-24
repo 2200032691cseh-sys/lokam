@@ -131,6 +131,15 @@ class BookEdition(models.Model):
     publication_label = models.CharField(max_length=80, blank=True)
 
 
+class Movie(models.Model):
+    item = models.OneToOneField(
+        CatalogueItem, on_delete=models.CASCADE, related_name="movie"
+    )
+    release_date = models.DateField(null=True, blank=True)
+    countries = models.CharField(max_length=240, blank=True)
+    languages = models.CharField(max_length=240, blank=True)
+
+
 class Person(models.Model):
     item = models.OneToOneField(
         CatalogueItem, on_delete=models.CASCADE, related_name="person"

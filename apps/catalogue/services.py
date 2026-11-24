@@ -50,6 +50,7 @@ PROVENANCE_FIELDS = {
     "publisher",
     "format",
     "publication",
+    "countries",
 }
 
 

@@ -41,6 +41,7 @@ LOKAM_JOB_HANDLERS = {
     "process-media": "apps.media.services.process_media",
     "delete-media": "apps.media.services.delete_media",
     "enrich-book": "apps.integrations.book_editions.fetch_editions_job",
+    "enrich-screen": "apps.integrations.screen_metadata.enrich_screen_job",
 }
 AUTH_USER_MODEL = "accounts.User"
 AUTHENTICATION_BACKENDS = ["apps.accounts.backends.VerifiedEmailBackend"]
