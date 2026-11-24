@@ -18,6 +18,8 @@ Use owner-scoped writes and composite owner constraints where IDs are repeated. 
 
 ## Schema review invariants
 
+User login identifies accounts by trimmed, lowercase email. The public username uses a 32-character ASCII handle and is stored lowercase. Both are required and unique. The initial accounts migration creates the custom model before session-backed features are introduced.
+
 - Lock the owning profile or collection before loading or applying an order. A concurrent reorder must validate the final ID set against the current owner-scoped rows. Defer uniqueness only inside the transaction that assigns the final positions.
 - Serialize changes to both directions of a follow or block pair using one lock order. Evaluate the current relationship and record scope when authorizing reads.
 - Resolve catalogue redirects before writing a personal relationship. During a merge, lock the canonical IDs in ascending order and recheck both under lock. Resolve uniqueness collisions explicitly. Retain conflicting annotations for review and leave the duplicate unmerged if a lossless import is unavailable.

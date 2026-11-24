@@ -11,6 +11,7 @@
 | LOK-005 | Complete | Verified uv 0.13.9, CPython 3.13.18, locked dependency sync and a SCRAM-authenticated connection to PostgreSQL 17.12 on Windows. |
 | LOK-006 | Complete | Django system checks and two configuration/database tests passed locally and in Linux CI with PostgreSQL 17. |
 | LOK-007 | Complete | Landing and 404 integration tests passed. Edge verified keyboard navigation and reflow at 320px and 1280px with JavaScript disabled. |
+| LOK-008 | Complete | The initial custom user migration applied on PostgreSQL 17. Tests cover normalized identity, duplicate rejection and Argon2 verification. |
 
 LOK-017 tests the architecture end to end with one user. LOK-058 is optional. LOK-067 is private beta and LOK-068 is the public launch gate.
 
