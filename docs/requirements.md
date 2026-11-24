@@ -1003,7 +1003,7 @@ Open Library:
 
 ## Movies and television
 
-TMDB:
+Wikidata provides credential-free film and television metadata.
 
 - Film and television metadata.
 - Cast and creators.
@@ -1014,7 +1014,7 @@ TMDB:
 - Similar titles.
 - Provider recommendations.
 
-Verify commercial usage restrictions before launch or monetization.
+Use reviewed sources for fields that Wikidata does not cover. Track provider suggestions separately from computed similarities.
 
 ## Music
 
@@ -1774,7 +1774,7 @@ Support automatic image retrieval from permitted sources.
 Examples:
 
 - Open Library book covers.
-- TMDB movie and television posters.
+- Appropriately licensed movie and television images.
 - Cover Art Archive album covers.
 - Wikimedia Commons photographs and illustrations.
 

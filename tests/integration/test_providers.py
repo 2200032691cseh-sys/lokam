@@ -7,7 +7,6 @@ from django.utils import timezone
 from apps.catalogue.models import CatalogueItem, ItemKind
 from apps.integrations.adapters import search_external
 from apps.integrations.http import (
-    ProviderCredentialsRequired,
     ProviderUnavailable,
     get_json,
 )
@@ -42,27 +41,41 @@ def test_lok_014_open_library_candidate_and_repeat_import():
     assert item.sources.get().fields == ["identifiers", "title", "year"]
 
 
-def test_lok_014_tmdb_is_optional_until_credentials_exist(settings):
-    settings.LOKAM_TMDB_TOKEN = ""
-    with pytest.raises(ProviderCredentialsRequired):
-        search_external(ItemKind.MOVIE, "Example film")
-
-    settings.LOKAM_TMDB_TOKEN = "unit-test-value"
+@pytest.mark.parametrize(
+    "kind, screen_class", [(ItemKind.MOVIE, "Q11424"), (ItemKind.SHOW, "Q5398426")]
+)
+def test_lok_014_wikidata_accepts_only_matching_classes(kind, screen_class):
+    def claim(value, rank="normal"):
+        return {"rank": rank, "mainsnak": {"datavalue": {"value": value}}}
 
     def fake_fetch(provider, path, *, params, headers):
-        assert provider == "tmdb" and path == "/3/search/movie"
-        assert headers["Authorization"] == "Bearer unit-test-value"
-        assert params["include_adult"] == "false"
+        assert path == "/w/api.php" and "Authorization" not in headers
+        if provider == "wikidata-search":
+            assert params["action"] == "wbsearchentities"
+            return {"search": [{"id": "Q24"}, {"id": "Q25"}, {"id": "not-an-id"}]}
+        assert params["ids"] == "Q24|Q25"
         return {
-            "results": [
-                {"id": 123, "title": "Example film", "release_date": "1939-01-01"},
-                {"id": 456, "title": "Filtered title", "adult": True},
-            ]
+            "entities": {
+                "Q24": {
+                    "lastrevid": 421,
+                    "labels": {"en": {"value": "Screen title"}},
+                    "claims": {
+                        "P31": [claim({"id": screen_class})],
+                        "P577": [
+                            claim({"time": "+1939-01-01T00:00:00Z", "precision": 11})
+                        ],
+                    },
+                },
+                "Q25": {
+                    "labels": {"en": {"value": "Unrelated title"}},
+                    "claims": {"P31": [claim({"id": screen_class}, rank="deprecated")]},
+                },
+            }
         }
 
-    (match,) = search_external(ItemKind.MOVIE, "Example film", fetch=fake_fetch)
-    assert match.year == 1939
-    assert match.source_url == "https://www.themoviedb.org/movie/123"
+    (match,) = search_external(kind, "Screen title", fetch=fake_fetch)
+    assert match.year == 1939 and match.revision == "421"
+    assert match.source_url == "https://www.wikidata.org/wiki/Q24"
 
 
 @pytest.mark.django_db

@@ -1,13 +1,17 @@
 import re
 from dataclasses import dataclass
 
-from django.conf import settings
 from django.core.exceptions import ValidationError
 
 from apps.catalogue.identifiers import Namespace, normalize_identifier
 from apps.catalogue.models import ItemKind, SourceProvider
 
-from .http import ProviderCredentialsRequired, ProviderUnavailable, get_json
+from .http import ProviderUnavailable, get_json
+
+SCREEN_CLASSES = {
+    ItemKind.MOVIE: {"Q11424", "Q202866", "Q93204", "Q24862"},
+    ItemKind.SHOW: {"Q5398426", "Q1259759", "Q15416"},
+}
 
 
 @dataclass(frozen=True)
@@ -19,13 +23,13 @@ class Candidate:
     title: str
     year: int | None
     creators: tuple[str, ...] = ()
+    revision: str = ""
 
     @property
     def source_url(self):
         if self.provider == SourceProvider.OPEN_LIBRARY:
             return f"https://openlibrary.org/works/{self.identifier}"
-        entity = "movie" if self.kind == ItemKind.MOVIE else "tv"
-        return f"https://www.themoviedb.org/{entity}/{self.identifier}"
+        return f"https://www.wikidata.org/wiki/{self.identifier}"
 
 
 def _title(value):
@@ -74,24 +78,110 @@ def _open_library_row(row):
     )
 
 
-def _tmdb_row(row, kind):
-    movie = kind == ItemKind.MOVIE
-    title = _title(row.get("title" if movie else "name"))
-    namespace = Namespace.TMDB_MOVIE if movie else Namespace.TMDB_SHOW
-    if not title or row.get("adult") is True:
+def _object(value):
+    return value if isinstance(value, dict) else {}
+
+
+def _claim_values(entity, property_id):
+    entries = _object(entity.get("claims")).get(property_id)
+    if not isinstance(entries, list):
+        return []
+    values = []
+    for entry in entries[:80]:
+        entry = _object(entry)
+        if entry.get("rank") == "deprecated":
+            continue
+        value = _object(_object(entry.get("mainsnak")).get("datavalue")).get("value")
+        if isinstance(value, dict):
+            values.append(value)
+    return values
+
+
+def _wikidata_candidate(identifier, entity, kind, fallback_label):
+    classes = {
+        value.get("id")
+        for value in _claim_values(entity, "P31")
+        if isinstance(value.get("id"), str)
+    }
+    labels = _object(entity.get("labels"))
+    title = (
+        _title(_object(labels.get("en")).get("value"))
+        or _title(_object(labels.get("mul")).get("value"))
+        or _title(fallback_label)
+    )
+    if not title or not classes & SCREEN_CLASSES[kind]:
         return None
-    try:
-        identifier = normalize_identifier(namespace, row.get("id"))
-    except ValidationError:
-        return None
+    years = []
+    for property_id in ("P577", "P580", "P571"):
+        for value in _claim_values(entity, property_id):
+            precision = value.get("precision")
+            raw = value.get("time")
+            if type(precision) is int and precision >= 9 and isinstance(raw, str):
+                match = re.match(r"^\+([0-9]{4})-", raw)
+                if match and (year := _year(int(match[1]))):
+                    years.append(year)
+        if years:
+            break
+    revision = entity.get("lastrevid")
     return Candidate(
-        SourceProvider.TMDB,
-        namespace,
+        SourceProvider.WIKIDATA,
+        Namespace.WIKIDATA,
         identifier,
         kind,
         title,
-        _year(row.get("release_date" if movie else "first_air_date")),
+        min(years, default=None),
+        revision=str(revision) if type(revision) is int else "",
     )
+
+
+def _search_wikidata(kind, query, fetch):
+    headers = {"User-Agent": "Lokam/0.1"}
+    matches = fetch(
+        "wikidata-search",
+        "/w/api.php",
+        params={
+            "action": "wbsearchentities",
+            "search": query,
+            "language": "en",
+            "type": "item",
+            "limit": 8,
+            "format": "json",
+        },
+        headers=headers,
+    )
+    keys = {}
+    for entry in _rows(matches, "search"):
+        try:
+            key = normalize_identifier(Namespace.WIKIDATA, entry.get("id"))
+        except ValidationError:
+            continue
+        keys.setdefault(key, entry.get("label"))
+    if not keys:
+        return []
+    data = fetch(
+        "wikidata-read",
+        "/w/api.php",
+        params={
+            "action": "wbgetentities",
+            "ids": "|".join(keys),
+            "languages": "en|mul",
+            "props": "info|labels|claims",
+            "format": "json",
+        },
+        headers=headers,
+    )
+    entities = data.get("entities")
+    if not isinstance(entities, dict):
+        raise ProviderUnavailable("Wikidata did not return structured entity data.")
+    return [
+        match
+        for key, fallback_label in keys.items()
+        if (
+            match := _wikidata_candidate(
+                key, _object(entities.get(key)), kind, fallback_label
+            )
+        )
+    ]
 
 
 def search_external(kind, query, *, fetch=get_json):
@@ -116,20 +206,4 @@ def search_external(kind, query, *, fetch=get_json):
         ]
     if kind not in {ItemKind.MOVIE, ItemKind.SHOW}:
         raise ValidationError("External search is unavailable for this catalogue type.")
-    token = settings.LOKAM_TMDB_TOKEN
-    if not token:
-        raise ProviderCredentialsRequired(
-            "TMDB is disabled until credentials are configured."
-        )
-    entity = "movie" if kind == ItemKind.MOVIE else "tv"
-    data = fetch(
-        SourceProvider.TMDB,
-        f"/3/search/{entity}",
-        params={"query": query, "include_adult": "false", "page": 1},
-        headers={"Authorization": f"Bearer {token}"},
-    )
-    return [
-        candidate
-        for row in _rows(data, "results")
-        if (candidate := _tmdb_row(row, kind))
-    ]
+    return _search_wikidata(kind, query, fetch)

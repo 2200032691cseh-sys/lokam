@@ -12,7 +12,7 @@ from apps.catalogue.services import (
 
 ATTRIBUTION = {
     SourceProvider.OPEN_LIBRARY: "Open Library catalogue metadata",
-    SourceProvider.TMDB: "TMDB attributed noncommercial metadata",
+    SourceProvider.WIKIDATA: "CC0 structured data",
 }
 
 
@@ -31,9 +31,10 @@ def _persist(candidate):
         raise IdentifierConflict(
             "The provider identifier has an incompatible catalogue type."
         )
-    revision = hashlib.sha256(
-        f"{candidate.title}\0{candidate.year}".encode()
-    ).hexdigest()
+    revision = (
+        candidate.revision
+        or hashlib.sha256(f"{candidate.title}\0{candidate.year}".encode()).hexdigest()
+    )
     fields = ["title", "identifiers"]
     if candidate.year is not None:
         fields.append("year")

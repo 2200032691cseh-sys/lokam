@@ -15,13 +15,15 @@ from .models import ProviderSyncState
 
 HOSTS = {
     "open-library": "openlibrary.org",
-    "tmdb": "api.themoviedb.org",
+    "wikidata-search": "www.wikidata.org",
+    "wikidata-read": "www.wikidata.org",
 }
 PATHS = {
     "open-library": re.compile(r"/(?:search\.json|works/OL[1-9][0-9]{0,15}W\.json)"),
-    "tmdb": re.compile(r"/3/(?:search/(?:movie|tv)|(?:movie|tv)/[1-9][0-9]{0,11})"),
+    "wikidata-search": re.compile(r"/w/api\.php"),
+    "wikidata-read": re.compile(r"/w/api\.php"),
 }
-INTERVALS = {"open-library": 1, "tmdb": 0.2}
+INTERVALS = {provider: 1 for provider in HOSTS}
 MAX_RESPONSE_BYTES = 512 * 1024
 DNS_THREADS = ThreadPoolExecutor(max_workers=2, thread_name_prefix="provider-dns")
 DNS_SLOTS = BoundedSemaphore(2)
@@ -29,10 +31,6 @@ DNS_SLOTS = BoundedSemaphore(2)
 
 class ProviderUnavailable(Exception):
     """Provider access or quota is temporarily unavailable."""
-
-
-class ProviderCredentialsRequired(ProviderUnavailable):
-    """An authenticated provider requires configured, valid credentials."""
 
 
 def _public_address(host):
@@ -120,10 +118,6 @@ def get_json(
                 extensions={"sni_hostname": host},
             ) as response,
         ):
-            if response.status_code in {401, 403} and provider == "tmdb":
-                raise ProviderCredentialsRequired(
-                    "TMDB credentials are unavailable or invalid."
-                )
             if response.status_code == 429:
                 value = response.headers.get("Retry-After", "")[:12]
                 delay = int(value) if value.isascii() and value.isdigit() else 60
@@ -143,9 +137,6 @@ def get_json(
             data = json.loads(body)
             if not isinstance(data, dict):
                 raise ValueError("The provider returned an unexpected response.")
-    except ProviderCredentialsRequired:
-        record_result(provider, retry_after=60)
-        raise
     except ProviderUnavailable:
         raise
     except (httpx.HTTPError, OSError, ValueError, RecursionError) as error:

@@ -6,8 +6,8 @@ from apps.integrations.http import ProviderUnavailable
 
 SMOKE_QUERIES = {
     ItemKind.BOOK: "Pride and Prejudice",
-    ItemKind.MOVIE: "Pride and Prejudice",
-    ItemKind.SHOW: "Pride and Prejudice",
+    ItemKind.MOVIE: "The Shawshank Redemption",
+    ItemKind.SHOW: "Breaking Bad",
 }
 
 

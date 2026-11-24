@@ -34,7 +34,6 @@ INSTALLED_APPS = [
     "apps.catalogue",
     "apps.integrations",
 ]
-LOKAM_TMDB_TOKEN = os.environ.get("LOKAM_TMDB_TOKEN", "")
 LOKAM_JOB_HANDLERS = {"account-mail": "apps.accounts.services.send_account_mail"}
 AUTH_USER_MODEL = "accounts.User"
 AUTHENTICATION_BACKENDS = ["apps.accounts.backends.VerifiedEmailBackend"]
