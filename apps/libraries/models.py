@@ -91,3 +91,12 @@ class BookAnnotation(models.Model):
     favourite_character = models.ForeignKey(
         CatalogueItem, on_delete=models.SET_NULL, null=True, blank=True
     )
+
+
+class MovieAnnotation(models.Model):
+    saved_item = models.OneToOneField(
+        UserItem, on_delete=models.CASCADE, related_name="movie_annotation"
+    )
+    favourite_scene = models.TextField(max_length=1500, blank=True)
+    favourite_performance = models.CharField(max_length=240, blank=True)
+    favourite_dialogue = models.CharField(max_length=280, blank=True)

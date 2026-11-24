@@ -4,7 +4,7 @@ from apps.catalogue.models import CatalogueItem, ItemKind, Predicate, normalize_
 from apps.catalogue.relationships import supported_public_edges
 from apps.core.policies import Visibility
 
-from .models import STATE_OPTIONS, BookAnnotation, SaveState, UserItem
+from .models import STATE_OPTIONS, BookAnnotation, MovieAnnotation, SaveState, UserItem
 
 
 class SearchForm(forms.Form):
@@ -96,21 +96,35 @@ class BookAnnotationForm(forms.ModelForm):
         ).order_by("title_key", "pk")
 
 
-class BookFilterForm(forms.Form):
-    state = forms.ChoiceField(
-        required=False,
-        label="Reading status",
-        choices=[
-            ("", "All books"),
-            *[(state.value, state.label) for state in STATE_OPTIONS[ItemKind.BOOK]],
-        ],
-    )
+class MovieAnnotationForm(forms.ModelForm):
+    class Meta:
+        model = MovieAnnotation
+        fields = ["favourite_scene", "favourite_performance", "favourite_dialogue"]
+        widgets = {"favourite_scene": forms.Textarea(attrs={"rows": 3})}
+        help_texts = {
+            "favourite_dialogue": "Keep quotations short. Your dialogue stays private."
+        }
+
+
+class LibraryFilterForm(forms.Form):
+    state = forms.ChoiceField(required=False, label="Status")
     query = forms.CharField(
         label="Title, author, genre, theme, character or series",
         required=False,
         max_length=120,
     )
     favourite = forms.BooleanField(label="Favourites only", required=False)
+
+    def __init__(self, *args, kind, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["state"].choices = [
+            ("", "All items"),
+            *[(state.value, state.label) for state in STATE_OPTIONS[kind]],
+        ]
+        if kind == ItemKind.MOVIE:
+            self.fields[
+                "query"
+            ].label = "Title, cast, director, genre, language or country"
 
     def clean_query(self):
         query = self.cleaned_data["query"]

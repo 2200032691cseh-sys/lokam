@@ -16,8 +16,14 @@ from apps.catalogue.models import ItemKind
 from apps.integrations.adapters import search_external
 from apps.integrations.http import ProviderUnavailable
 
-from .forms import BookAnnotationForm, ItemSettingsForm, ManualItemForm, SearchForm
-from .models import BookAnnotation, UserItem
+from .forms import (
+    BookAnnotationForm,
+    ItemSettingsForm,
+    ManualItemForm,
+    MovieAnnotationForm,
+    SearchForm,
+)
+from .models import BookAnnotation, MovieAnnotation, UserItem
 from .services import (
     EXTERNAL_KINDS,
     available_items,
@@ -27,6 +33,27 @@ from .services import (
     save_signed_candidate,
     sign_candidate,
 )
+
+ANNOTATION_FORMS = {
+    ItemKind.BOOK: (
+        BookAnnotation,
+        BookAnnotationForm,
+        "book",
+        "Personal book details",
+    ),
+    ItemKind.BOOK_EDITION: (
+        BookAnnotation,
+        BookAnnotationForm,
+        "book",
+        "Personal book details",
+    ),
+    ItemKind.MOVIE: (
+        MovieAnnotation,
+        MovieAnnotationForm,
+        "movie",
+        "Personal film details",
+    ),
+}
 
 
 @never_cache
@@ -117,22 +144,29 @@ def edit(request, saved_id):
     saved = get_object_or_404(rows, owner=request.user, public_id=saved_id)
     data = request.POST if request.method == "POST" else None
     form = ItemSettingsForm(data, instance=saved)
-    book_form = None
-    if saved.item.kind in {ItemKind.BOOK, ItemKind.BOOK_EDITION}:
-        annotation = BookAnnotation.objects.filter(
+    annotation_form = None
+    heading = ""
+    if config := ANNOTATION_FORMS.get(saved.item.kind):
+        model, factory, prefix, heading = config
+        annotation = model.objects.filter(saved_item=saved).first() or model(
             saved_item=saved
-        ).first() or BookAnnotation(saved_item=saved)
-        book_form = BookAnnotationForm(data, prefix="book", instance=annotation)
-    if form.is_valid() and (book_form is None or book_form.is_valid()):
+        )
+        annotation_form = factory(data, prefix=prefix, instance=annotation)
+    if form.is_valid() and (annotation_form is None or annotation_form.is_valid()):
         form.save()
-        if book_form is not None and book_form.has_changed():
-            book_form.save()
+        if annotation_form is not None and annotation_form.has_changed():
+            annotation_form.save()
         messages.success(request, "Saved item updated.")
         return redirect("libraries:edit", saved.public_id)
     return render(
         request,
         "libraries/edit.html",
-        {"saved": saved, "form": form, "book_form": book_form},
+        {
+            "saved": saved,
+            "form": form,
+            "annotation_form": annotation_form,
+            "annotation_heading": heading,
+        },
     )
 
 

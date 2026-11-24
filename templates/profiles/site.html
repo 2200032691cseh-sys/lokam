@@ -21,11 +21,11 @@
 {% endif %}
 {% if page.key != "home" %}
   {% block page_content %}
-    {% if book_filter %}
+    {% if library_filter %}
       <form method="get">
-        {% include "components/form_fields.html" with form=book_filter %}
+        {% include "components/form_fields.html" with form=library_filter %}
         {% if preview %}<input type="hidden" name="preview" value="public">{% endif %}
-        <button>Filter books</button>
+        <button>Filter</button>
       </form>
     {% endif %}
     {% if item_page is not None %}

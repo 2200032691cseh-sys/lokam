@@ -18,6 +18,7 @@
 <p><small>{{ item.get_kind_display }}{% if item.year is not None %} · {{ item.year }}{% endif %}</small></p>
 {% if item.description %}{{ item.description|linebreaks }}{% endif %}
 {% include "catalogue/book_details.html" %}
+{% include "catalogue/movie_details.html" %}
 {% if item.public_credits %}
   <section aria-labelledby="credits">
     <h2 id="credits">Credits</h2>

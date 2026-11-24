@@ -1,0 +1,12 @@
+{% if movie %}
+  {% if movie.release_date or movie.languages or movie.countries %}
+    <section aria-labelledby="movie-details">
+      <h2 id="movie-details">Film details</h2>
+      <dl>
+        {% if movie.release_date %}<dt>First documented release</dt><dd>{{ movie.release_date|date:"j F Y" }}</dd>{% endif %}
+        {% if movie.languages %}<dt>Languages</dt><dd>{{ movie.languages }}</dd>{% endif %}
+        {% if movie.countries %}<dt>Countries</dt><dd>{{ movie.countries }}</dd>{% endif %}
+      </dl>
+    </section>
+  {% endif %}
+{% endif %}

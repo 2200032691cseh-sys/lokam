@@ -17,6 +17,7 @@ HOSTS = {
     "open-library": "openlibrary.org",
     "wikidata-search": "www.wikidata.org",
     "wikidata-read": "www.wikidata.org",
+    "wikidata-labels": "www.wikidata.org",
     "commons-image": "commons.wikimedia.org",
 }
 PATHS = {
@@ -25,6 +26,7 @@ PATHS = {
     ),
     "wikidata-search": re.compile(r"/w/api\.php"),
     "wikidata-read": re.compile(r"/w/api\.php"),
+    "wikidata-labels": re.compile(r"/w/api\.php"),
     "commons-image": re.compile(r"/w/api\.php"),
 }
 INTERVALS = {provider: 1 for provider in HOSTS}

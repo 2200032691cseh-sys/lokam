@@ -6,7 +6,7 @@ from django.views.decorators.http import require_safe
 from apps.media.models import CatalogueImage
 
 from .identifiers import Namespace
-from .models import BookEdition, ItemKind
+from .models import BookEdition, ItemKind, Movie
 from .relationships import public_relations
 from .services import public_details, public_items
 
@@ -69,6 +69,9 @@ def detail(request, public_id):
             "book_editions": book_editions,
             "edition": edition,
             "isbns": isbns,
+            "movie": Movie.objects.filter(item=item).first()
+            if item.kind == ItemKind.MOVIE
+            else None,
         },
     )
 
