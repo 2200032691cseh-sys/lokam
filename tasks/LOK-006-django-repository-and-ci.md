@@ -1,6 +1,6 @@
 # LOK-006 Django repository and CI
 
-**Status** Planned. Architecture and task authorization required before implementation.
+**Status** Local verification passed. Check Linux CI before merging the bootstrap.
 
 ## Problem being solved
 

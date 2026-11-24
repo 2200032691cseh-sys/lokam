@@ -15,3 +15,11 @@ Use internal bigint keys, opaque public IDs for private objects, UTC technical t
 | Operations | MediaAsset owner, opaque key, status, hash, quota bytes, variants. BackgroundJob kind/state, unique dedup key, attempts, available time and lease/token. ImportJob/ExportJob owner, version and temporary artifact. ProviderSyncState quotas/cache/circuit state. Erasure marker for restore replay. |
 
 Use owner-scoped writes and composite owner constraints where IDs are repeated. Reorder transactionally with deferrable positions. Merge exact IDs or administrator-approved matches under ordered locks. Dry-run collisions, redirect loser, rewire graph and dependent rows, retain annotations and audit. Let erasure cascade personal rows and enqueue media cleanup; protect shared canonical rows. Use JSONB for versioned supplementary data and manifests only. Use separate migration credentials, expand/backfill/validate/contract migrations and PostgreSQL integration tests.
+
+## Schema review invariants
+
+- Lock the owning profile or collection before loading or applying an order. A concurrent reorder must validate the final ID set against the current owner-scoped rows. Defer uniqueness only inside the transaction that assigns the final positions.
+- Serialize changes to both directions of a follow or block pair using one lock order. Evaluate the current relationship and record scope when authorizing reads.
+- Resolve catalogue redirects before writing a personal relationship. During a merge, lock the canonical IDs in ascending order and recheck both under lock. Resolve uniqueness collisions explicitly. Retain conflicting annotations for review and leave the duplicate unmerged if a lossless import is unavailable.
+- Freeze new writes and invalidate sessions before erasure. Record the external object cleanup work before deleting database references. A retry after storage failure uses the same object keys. Preserve shared catalogue rows and prevent stale queued work from restoring erased records.
+- Verify each kind-specific FK at the database boundary where a composite key or typed relation can encode the rule. Use service validation and PostgreSQL regression tests for invariants that span independent records and cannot use a simple check constraint.

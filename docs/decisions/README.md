@@ -1,4 +1,4 @@
-# Architecture decisions awaiting approval
+# Architecture decisions
 
 | ID | Proposal | Consequence and confirmation |
 |---|---|---|
@@ -10,4 +10,4 @@
 | ADR-006 | Free development and conditional beta | Public hosting and worker reliability need demonstrated capacity, verified email and recoverable backups. |
 | ADR-007 | Optional profile inference | Remains disabled until privacy, isolation, quality and cost gates pass. |
 
-Approval authorizes the architecture direction. The implementation operating rules still require an approved task before code changes. Resolve data rights, hosting region, sender, backup destination, workload, release jurisdiction and staffing in their linked backlog tasks.
+The repository owner approved the architecture and backlog on November 24, 2026. Resolve data rights, hosting region, sender, backup destination, workload, release jurisdiction and staffing in the linked tasks. Optional inference retains its separate production gate.

@@ -18,3 +18,13 @@ Letterboxd confirms a ZIP of CSV files that can include deleted content. Import 
 MusicBrainz licenses core data under CC0 and supplementary data under CC BY-NC-SA 3.0. Commercial web-service access is a separate issue. Check which fields are supplementary and retain their attribution and redistribution requirements. [Data licence](https://musicbrainz.org/doc/About/Data_License) · [API terms FAQ](https://musicbrainz.org/doc/MusicBrainz_API/FAQ)
 
 Adapters use a common typed candidate schema and per-provider auth, allowlists, deadlines, quotas, Retry-After, bounded retries, validated responses, source metadata and kill switches. Keep cache TTLs and display/copy/export permissions per provider and field. Keep secret keys server-side. Record supported rights, region and cache duration before enabling. Use placeholders/source links when rights or assets are missing. Validate credentials and one real read per enabled capability after approval. Manual owner-only entry and curated source links address sparse data for food, heritage, regional languages, traditions, local venues and experiences.
+
+## Initial adapter gates
+
+| Source | Fields eligible for initial ingestion | Held pending verification |
+|---|---|---|
+| Open Library | Work and edition IDs, ISBN, title, authors, publication year, language and factual subject references, with source provenance. Use at most one request per second until a maintainer contact is configured. | Long descriptions and cover redisplay or storage pending field and asset rights review. [Licensing](https://openlibrary.org/developers/licensing) |
+| TMDB | After enrollment and terms review, ingest film/TV identifiers, title, release year and credited names within the approved policy. Respect HTTP 429. | Credentialed smoke check, caching, redistribution/export and poster delivery. Start disabled. [Rate limiting](https://developer.themoviedb.org/docs/rate-limiting) · [Image delivery](https://developer.themoviedb.org/docs/image-basics) |
+| Wikidata | QIDs, labels and targeted CC0 statements, references and qualifiers. | Individual graph assertions need evidence review. Linked images and third-party source text retain separate rights. [Licensing](https://www.wikidata.org/wiki/Wikidata:Licensing) |
+
+Only persist fields whose policy is recorded. Attach source identifiers and retrieval time. Exclude provider payloads from personal export unless redistribution is expressly permitted. Live credentials and terms acceptance must precede credentialed source enablement.
