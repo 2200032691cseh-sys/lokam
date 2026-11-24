@@ -5,6 +5,8 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 
+from .identifiers import Namespace, normalize_identifier
+
 
 def normalize_name(value):
     normalized = unicodedata.normalize("NFKC", value).casefold()
@@ -213,4 +215,66 @@ class ItemTag(models.Model):
             models.UniqueConstraint(
                 fields=["item", "term"], name="catalogue_unique_item_term"
             )
+        ]
+
+
+class ExternalIdentifier(models.Model):
+    item = models.ForeignKey(
+        CatalogueItem, on_delete=models.CASCADE, related_name="external_ids"
+    )
+    namespace = models.CharField(
+        max_length=16, choices=[(value.value, value.name) for value in Namespace]
+    )
+    value = models.CharField(max_length=40)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["namespace", "value"], name="catalogue_unique_external_id"
+            ),
+            models.CheckConstraint(
+                condition=models.Q(namespace__in=[value.value for value in Namespace]),
+                name="catalogue_valid_external_namespace",
+            ),
+        ]
+
+    def save(self, *args, **kwargs):
+        self.value = normalize_identifier(self.namespace, self.value)
+        super().save(*args, **kwargs)
+
+
+class SourceProvider(models.TextChoices):
+    OPEN_LIBRARY = "open-library", "Open Library"
+    TMDB = "tmdb", "TMDB"
+    WIKIDATA = "wikidata", "Wikidata"
+    MUSICBRAINZ = "musicbrainz", "MusicBrainz"
+    WIKIMEDIA = "wikimedia", "Wikimedia"
+    MANUAL = "manual", "Manual source"
+
+
+class CatalogueSource(models.Model):
+    item = models.ForeignKey(
+        CatalogueItem, on_delete=models.CASCADE, related_name="sources"
+    )
+    provider = models.CharField(max_length=16, choices=SourceProvider.choices)
+    reference = models.CharField(max_length=140)
+    revision = models.CharField(max_length=80)
+    source_url = models.URLField(max_length=500)
+    licence = models.CharField(max_length=120, blank=True)
+    fields = models.JSONField(default=list)
+    retrieved_at = models.DateTimeField(auto_now_add=True)
+    show_credit = models.BooleanField(default=False)
+    export_allowed = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ["provider", "-retrieved_at", "pk"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["item", "provider", "reference", "revision"],
+                name="catalogue_unique_source_revision",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(provider__in=SourceProvider.values),
+                name="catalogue_valid_source",
+            ),
         ]
