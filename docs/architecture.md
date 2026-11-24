@@ -1,0 +1,13 @@
+# Proposed architecture
+
+**Awaiting explicit approval.** One Django modular monolith, PostgreSQL database, object-storage interface and bounded worker. Propose Django 5.2 LTS, Python 3.13, PostgreSQL 17, Psycopg 3 and uv, with compatible patches pinned after the Windows/Linux check. Use Django templates/forms and progressive vanilla JS. Serve via Gunicorn WSGI on Linux and WhiteNoise static files. ASGI requires a streaming decision. [Django support](https://www.djangoproject.com/download/)
+
+Apps own identity, profile navigation/privacy, catalogue and graph, personal libraries, collections, memories, timeline, discovery, search, social, media, moderation, integrations, jobs, portability and operations. Create modules when needed. Views validate forms and use scoped queries. Explicit services own transactions. Integrations return validated candidates; catalogue services resolve and persist permitted fields; libraries own personal saves. Avoid internal HTTP, generic ORM wrappers and hidden signal-based workflows. Configurations separate development, test and production.
+
+Local search uses exact IDs/title, prefix, tsvector/GIN and pg_trgm across aliases, creators, genres and subjects. Retain originals alongside Unicode-normalized keys. Test Telugu, mixed scripts and script-specific fallback. Apply visibility before ranking, counts, snippets or pagination. Fetch external matches only on demand with allowlists, timeout/byte caps and manual fallback.
+
+Queue changes transactionally with related writes. Worker management command claims via FOR UPDATE SKIP LOCKED, commits a lease/fencing token, does bounded work outside locks, and conditionally finalizes. Use dedup keys, max attempts, exponential backoff, crash recovery, cancellation checkpoints, resource limits and sanitized failed-job inspection. Provider writes need idempotency or reconciliation. Local scheduling supports development; public launch requires measured job cadence.
+
+First prove account → provider-backed book or film save → factual recommendation in a different domain using source-backed fixtures and a real provider smoke check. Later add catalogue-only semantic vectors after benchmarking. See [schema](database.md), [privacy](privacy.md) and [deployment](deployment.md).
+
+Unresolved decisions include hosting region, verified sender/domain, data and image permissions, legal jurisdiction, worker budget, backup storage, semantic model and moderation staffing. Local-language coverage, cold starts, private media bandwidth and provider availability require acceptance measurements. [Decisions](decisions/README.md)

@@ -1,0 +1,3 @@
+# Accessibility
+
+Target WCAG 2.2 AA. Use landmarks, skip links, logical headings, native labelled controls, visible focus, keyboard navigation, reduced motion, clear dialog exit, accessible authentication and error/status announcements. Use meaningful alt and captions, text equivalents for maps and statistics, 200% zoom and narrow reflow. Test contrast and target sizes. Verify core operations with JS off. Run axe across route families and all 20 pages, then manually test keyboard, zoom, mobile and NVDA on Windows. Record each failed criterion and fix before release. [WCAG 2.2](https://www.w3.org/TR/WCAG22/)

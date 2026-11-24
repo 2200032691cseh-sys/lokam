@@ -1,0 +1,5 @@
+# Frontend design system
+
+Use a centred document layout around 850px, system sans-serif, 16px body at 1.6 line height, headings 28/21/18px and secondary text 14px. Use #080F24 background, #101B35 secondary, #172440 surface, #293A59 separators, #E8EDF7 main text, #A3B1CD secondary text and #9BAED5 underlined links. Verify distinct focus and interactive border contrast. Use text navigation, thin rules, restrained controls and meaningful licensed images. Avoid celestial imagery and dashboard styling. [Reference for traditional document layout](https://karpathy.ai/)
+
+Home uses plain introduction prose, page links and optional features. Catalogue supports filters, list/grid, cover with intrinsic size, metadata, native save form and pagination. Discover uses finite editorial groups with evidence beside each recommendation. Forms use an error summary, inline feedback and accessible job status. Use move controls for order, progressive enhancement, responsive images, 320 CSS px reflow and a destination list alongside the map.
