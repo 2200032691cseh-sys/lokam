@@ -1,6 +1,6 @@
 # LOK-011 Profiles and centralized policy
 
-**Status** Planned. Architecture and task authorization required before implementation.
+**Status** Complete. Verified profile visibility, site navigation and transactional page ordering.
 
 ## Problem being solved
 

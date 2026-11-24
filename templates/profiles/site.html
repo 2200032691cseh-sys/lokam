@@ -1,0 +1,27 @@
+{% extends "platform/base.html" %}
+{% block title %}{{ page.get_key_display }} · {{ profile.user.username }} | Lokam{% endblock %}
+{% block content %}
+{% if preview %}<p>Public preview</p>{% endif %}
+{% if not page.enabled %}<p>This page is hidden from visitors.</p>{% endif %}
+{% if page.key == "home" %}
+  {% if profile.introduction %}<p>{{ profile.introduction|linebreaksbr }}</p>{% endif %}
+{% else %}
+  <h1>{{ page.get_key_display }}</h1>
+{% endif %}
+{% if pages %}
+  <nav aria-label="{{ profile.user.username }}’s pages">
+    <ul class="site-pages">
+      {% for item in pages %}
+        <li>
+          <a href="{% if item.key == 'home' %}{% url 'profiles:home' profile.user.username %}{% else %}{% url 'profiles:page' profile.user.username item.key %}{% endif %}{% if preview %}?preview=public{% endif %}"{% if item.key == page.key %} aria-current="page"{% endif %}>{{ item.get_key_display }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  </nav>
+{% endif %}
+{% if page.key != "home" %}
+  {% block page_content %}<p>There’s nothing here yet.</p>{% endblock %}
+{% elif owner and not profile.introduction %}
+  <p><a href="{% url 'profiles:settings' %}">Edit your website settings</a></p>
+{% endif %}
+{% endblock %}
