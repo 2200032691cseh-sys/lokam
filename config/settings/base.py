@@ -31,8 +31,24 @@ INSTALLED_APPS = [
     "apps.accounts",
     "apps.jobs",
 ]
-LOKAM_JOB_HANDLERS = {}
+LOKAM_JOB_HANDLERS = {"account-mail": "apps.accounts.services.send_account_mail"}
 AUTH_USER_MODEL = "accounts.User"
+AUTHENTICATION_BACKENDS = ["apps.accounts.backends.VerifiedEmailBackend"]
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+        "OPTIONS": {"min_length": 12},
+    },
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+]
+LOGIN_URL = "accounts:login"
+LOKAM_PUBLIC_ORIGIN = os.environ.get(
+    "LOKAM_PUBLIC_ORIGIN", "http://127.0.0.1:8000"
+).rstrip("/")
+SECURE_REFERRER_POLICY = "no-referrer"
 PASSWORD_HASHERS = [
     "django.contrib.auth.hashers.Argon2PasswordHasher",
     "django.contrib.auth.hashers.PBKDF2PasswordHasher",
@@ -43,6 +59,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "apps.accounts.middleware.enforce_session_generation",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]

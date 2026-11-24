@@ -11,6 +11,7 @@ def test_lok_008_canonical_identity_and_argon2():
         email=" Reader@Example.test ",
         username="READER",
         password="sample-test-password",
+        email_verified=True,
     )
 
     assert user.email == "reader@example.test"
@@ -21,7 +22,7 @@ def test_lok_008_canonical_identity_and_argon2():
         == user
     )
     assert not user.is_staff
-    assert not user.email_verified
+    assert user.email_verified
 
 
 @pytest.mark.django_db

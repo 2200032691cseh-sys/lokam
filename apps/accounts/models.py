@@ -1,3 +1,6 @@
+import uuid
+
+from django.conf import settings
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.validators import ASCIIUsernameValidator
@@ -67,3 +70,24 @@ class User(AbstractUser):
         super().clean()
         self.username = (self.username or "").strip().lower()
         self.email = (self.email or "").strip().lower()
+
+
+class AccountMail(models.Model):
+    class Purpose(models.TextChoices):
+        VERIFY = "verify"
+        RESET = "reset"
+
+    reference = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    purpose = models.CharField(max_length=8, choices=Purpose.choices)
+    digest = models.CharField(max_length=64)
+    session_generation = models.PositiveIntegerField()
+    expires_at = models.DateTimeField(db_index=True)
+    used_at = models.DateTimeField(null=True)
+    sent_at = models.DateTimeField(null=True)
+
+
+class AuthThrottle(models.Model):
+    key = models.CharField(primary_key=True, max_length=64)
+    expires_at = models.DateTimeField(db_index=True)
+    count = models.PositiveSmallIntegerField(default=0)

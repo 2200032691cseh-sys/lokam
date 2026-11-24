@@ -1,0 +1,6 @@
+{% extends "platform/base.html" %}
+{% block title %}Link unavailable | Lokam{% endblock %}
+{% block content %}
+<h1>Link unavailable</h1>
+<p>This link may have expired or already been used. <a href="{% url retry %}">Request another email</a>.</p>
+{% endblock %}
