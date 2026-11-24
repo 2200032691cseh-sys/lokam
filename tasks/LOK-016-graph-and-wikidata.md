@@ -1,6 +1,6 @@
 # LOK-016 Graph and Wikidata
 
-**Status** Planned. Architecture and task authorization required before implementation.
+**Status** Complete. Contract tests and the live Wikidata milestone verify exact-ID graph ingestion and factual review.
 
 ## Problem being solved
 

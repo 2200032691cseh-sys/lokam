@@ -37,4 +37,12 @@
     {% endfor %}</ul>
   </section>
 {% endif %}
+{% if relations %}
+  <section aria-labelledby="related">
+    <h2 id="related">Related items</h2>
+    <ul>{% for relation, label in relations %}
+      <li>{{ label }} · <a href="{% url 'catalogue:detail' relation.public_id %}">{{ relation.title }}</a></li>
+    {% endfor %}</ul>
+  </section>
+{% endif %}
 {% endblock %}
