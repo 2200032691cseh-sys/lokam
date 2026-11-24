@@ -12,7 +12,7 @@ Evidence matrix covers every production readiness clause.
 
 ## Dependencies
 
-[LOK-031](LOK-031-activities-and-experiences.md), [LOK-037](LOK-037-statistics.md), [LOK-055](LOK-055-imports.md), [LOK-056](LOK-056-exports.md), [LOK-059](LOK-059-help-and-policy-pages.md), [LOK-061](LOK-061-backup-and-restore-drills.md), [LOK-063](LOK-063-accessibility-verification.md), [LOK-064](LOK-064-security-verification.md), [LOK-065](LOK-065-performance-verification.md)
+[LOK-031](LOK-031-activities-and-experiences.md), [LOK-036](LOK-036-lifetime-bucket-list.md), [LOK-037](LOK-037-statistics.md), [LOK-055](LOK-055-imports.md), [LOK-056](LOK-056-exports.md), [LOK-059](LOK-059-help-and-policy-pages.md), [LOK-061](LOK-061-backup-and-restore-drills.md), [LOK-063](LOK-063-accessibility-verification.md), [LOK-064](LOK-064-security-verification.md), [LOK-065](LOK-065-performance-verification.md)
 
 ## Prerequisites
 

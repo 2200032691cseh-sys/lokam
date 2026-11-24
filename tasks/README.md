@@ -71,7 +71,7 @@ LOK-017 tests the architecture end to end with one user. LOK-058 is optional. LO
 | [LOK-063](LOK-063-accessibility-verification.md) | Accessibility verification | LOK-038, LOK-054, LOK-059, LOK-060 | 12, 24–25 |
 | [LOK-064](LOK-064-security-verification.md) | Security verification | LOK-052, LOK-054, LOK-057, LOK-060 | 18–21, 24 |
 | [LOK-065](LOK-065-performance-verification.md) | Performance verification | LOK-048, LOK-060, LOK-062 | 24–25 |
-| [LOK-066](LOK-066-full-regression.md) | Full regression | LOK-031, LOK-037, LOK-055, LOK-056, LOK-059, LOK-061, LOK-063, LOK-064, LOK-065 | 24, 32 |
+| [LOK-066](LOK-066-full-regression.md) | Full regression | LOK-031, LOK-036, LOK-037, LOK-055, LOK-056, LOK-059, LOK-061, LOK-063, LOK-064, LOK-065 | 24, 32 |
 | [LOK-067](LOK-067-private-beta.md) | Private beta | LOK-062, LOK-066 | 29, 32 |
 | [LOK-068](LOK-068-production-readiness-and-legal-review.md) | Production readiness and legal review | LOK-058, LOK-067 | 27, 32 |
 | [LOK-069](LOK-069-public-release.md) | Public release | LOK-068 | 29, 32 |
