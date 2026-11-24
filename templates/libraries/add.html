@@ -1,0 +1,46 @@
+{% extends "platform/base.html" %}
+{% block title %}Add to your library | Lokam{% endblock %}
+{% block content %}
+<h1>Add to your library</h1>
+<form method="get">
+  {% include "components/form_fields.html" %}
+  <button type="submit">Search Lokam</button>
+  {% if has_provider %}<button name="external" value="yes">Search external catalogue</button>{% endif %}
+</form>
+{% if form.is_bound and not form.errors %}
+  <section aria-labelledby="local-title">
+    <h2 id="local-title">Lokam matches</h2>
+    <ul>
+    {% for item in matches %}
+      <li>
+        {{ item.title }}{% if item.year is not None %} · {{ item.year }}{% endif %}
+        <form method="post" action="{% url 'libraries:save-existing' item.public_id %}">
+          {% csrf_token %}<button type="submit">Save {{ item.title }}</button>
+        </form>
+      </li>
+    {% empty %}<li>No local matches.</li>{% endfor %}
+    </ul>
+  </section>
+{% endif %}
+{% if provider_unavailable %}
+  <p role="status">The external catalogue is temporarily unavailable. You can add an item manually.</p>
+{% elif external_matches is not None %}
+  <section aria-labelledby="external-title">
+    <h2 id="external-title">External matches</h2>
+    <ul>
+    {% for candidate, token in external_matches %}
+      <li>
+        {{ candidate.title }}{% if candidate.year is not None %} · {{ candidate.year }}{% endif %}
+        {% if candidate.creators %} · {{ candidate.creators|join:", " }}{% endif %}
+        · <a href="{{ candidate.source_url }}">Source</a>
+        <form method="post" action="{% url 'libraries:save-external' %}">
+          {% csrf_token %}<input type="hidden" name="candidate" value="{{ token }}">
+          <button type="submit">Save {{ candidate.title }}</button>
+        </form>
+      </li>
+    {% empty %}<li>No external matches.</li>{% endfor %}
+    </ul>
+  </section>
+{% endif %}
+<p><a href="{% url 'libraries:manual' %}">Add an item manually</a></p>
+{% endblock %}

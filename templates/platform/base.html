@@ -17,6 +17,7 @@
       {% if request.user.is_authenticated %}
         <a href="{% url 'profiles:home' request.user.username %}">Your website</a>
         <a href="{% url 'profiles:settings' %}">Profile settings</a>
+        <a href="{% url 'libraries:index' %}">Saved items</a>
         <form method="post" action="{% url 'accounts:logout' %}">
           {% csrf_token %}
           <button type="submit">Log out</button>

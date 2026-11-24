@@ -7,6 +7,7 @@ urlpatterns = [
     path("", include("apps.profiles.urls")),
     path("account/", include("apps.accounts.urls")),
     path("catalogue/", include("apps.catalogue.urls")),
+    path("saved/", include("apps.libraries.urls")),
     path(
         "", TemplateView.as_view(template_name="platform/landing.html"), name="landing"
     ),
