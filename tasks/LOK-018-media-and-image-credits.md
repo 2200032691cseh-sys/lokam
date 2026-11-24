@@ -1,6 +1,6 @@
 # LOK-018 Media and image credits
 
-**Status** Planned. Architecture and task authorization required before implementation.
+**Status** Complete. Private media tests and live image-attribution lookup passed. Production object storage remains a deployment gate.
 
 ## Problem being solved
 

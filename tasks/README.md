@@ -21,6 +21,7 @@
 | LOK-015 | Complete | Browser entry points cover local-first search, signed external confirmation, manual fallback, idempotent saves, typed state and scoped library display. |
 | LOK-016 | Complete | PostgreSQL tests cover typed edges, revisioned evidence, exact-ID mapping, review and withdrawal. A live Wikidata import supplied the adaptation evidence used in the milestone. |
 | LOK-017 | Complete | Live end-to-end test registered and verified one account, saved Open Library work OL66554W, and recommended film Q270385 from reviewed Wikidata and distributor evidence. Regression covers content evidence, filtering and withdrawal of unreviewed edges. |
+| LOK-018 | Complete | Verified private upload, EXIF removal, responsive variants, cross-user denial, quota checks and deletion. Live Commons lookup verified attribution and thumbnail URL handling. |
 
 LOK-017 tests the architecture end to end with one user. LOK-058 is optional. LOK-067 is private beta and LOK-068 is the public launch gate.
 

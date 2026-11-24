@@ -9,6 +9,7 @@ urlpatterns = [
     path("catalogue/", include("apps.catalogue.urls")),
     path("saved/", include("apps.libraries.urls")),
     path("discover/", include("apps.discovery.urls")),
+    path("images/", include("apps.media.urls")),
     path(
         "", TemplateView.as_view(template_name="platform/landing.html"), name="landing"
     ),

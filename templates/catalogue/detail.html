@@ -2,6 +2,14 @@
 {% block title %}{{ item.title }} | Lokam{% endblock %}
 {% block content %}
 <h1>{{ item.title }}</h1>
+{% if catalogue_image %}
+  <figure class="catalogue-artwork">
+    <img src="{{ catalogue_image.url }}" alt="{{ catalogue_image.description }}" loading="lazy" referrerpolicy="no-referrer">
+    <figcaption><a href="{{ catalogue_image.source.source_url }}">{{ catalogue_image.credit }}</a> · {% if catalogue_image.licence_url %}<a href="{{ catalogue_image.licence_url }}">{{ catalogue_image.licence }}</a>{% else %}{{ catalogue_image.licence }}{% endif %}</figcaption>
+  </figure>
+{% elif item.kind == "book" or item.kind == "movie" or item.kind == "tv-show" %}
+  <p><small>No licensed image is available.</small></p>
+{% endif %}
 {% if user.is_authenticated %}
 <form method="post" action="{% url 'libraries:save-existing' item.public_id %}">
   {% csrf_token %}<button type="submit">Save to your library</button>

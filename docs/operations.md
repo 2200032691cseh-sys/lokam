@@ -1,5 +1,7 @@
 # Operations
 
+Process private image uploads with the job runner. The worker keeps the raw upload in quarantine, generates small and large metadata-free WebP variants, and removes the original. `sweep_staged_media` queues up to 50 interrupted uploads older than one hour. Deleting an image revokes its routes immediately and queues object deletion. Development storage is a private filesystem directory. Configure and verify the S3-compatible deployment backend before staging.
+
 Publish liveness without private details and bounded readiness for DB/config. Track request latency, errors, connection use, quotas, storage, delivery failures, oldest job, terminal retries, backup freshness and auth anomalies. Alert on missed backups, stuck jobs, failed deploys and quota thresholds. Sanitize logs and telemetry. Set access and retention by environment. Rotate keys and rehearse emergency revocation.
 
 Use `uv run --env-file .env python manage.py run_jobs --limit 20 --seconds 60` to process a finite local batch. Jobs contain a registered kind and object identifier. A claimed job runs in a subprocess with a timeout. The database lease is fenced so a stale child cannot publish a final job state. Handlers must check their lease before side effects and make external writes replay-safe. Operators can inspect state and sanitized error codes through the Django shell. Scheduling and dashboards are deployment and monitoring tasks.
