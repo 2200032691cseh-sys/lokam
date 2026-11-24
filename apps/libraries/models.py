@@ -46,6 +46,7 @@ class UserItem(models.Model):
         max_length=9, choices=Visibility.choices, default=Visibility.PRIVATE
     )
     favourite = models.BooleanField(default=False)
+    feature_on_home = models.BooleanField(default=False)
     rating = models.PositiveSmallIntegerField(
         null=True, blank=True, validators=[MinValueValidator(1), MaxValueValidator(5)]
     )
@@ -53,6 +54,10 @@ class UserItem(models.Model):
 
     class Meta:
         constraints = [
+            models.CheckConstraint(
+                condition=models.Q(feature_on_home=False) | models.Q(favourite=True),
+                name="libraries_home_features_are_favourites",
+            ),
             models.UniqueConstraint(
                 fields=["owner", "item"], name="libraries_unique_saved_item"
             ),

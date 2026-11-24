@@ -1,6 +1,6 @@
 # LOK-019 Home and profile settings
 
-**Status** Planned. Architecture and task authorization required before implementation.
+**Status** Complete. Home, profile photographs and selected favourites passed composed visibility tests. Other featured types connect in their owning tasks.
 
 ## Problem being solved
 

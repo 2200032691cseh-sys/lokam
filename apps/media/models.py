@@ -33,6 +33,9 @@ class MediaAsset(models.Model):
     checksum = models.CharField(max_length=64, blank=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return self.description
+
     class Meta:
         indexes = [
             models.Index(fields=["state", "updated_at"], name="media_state_age_idx")

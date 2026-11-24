@@ -13,8 +13,10 @@ from django.views.decorators.http import (
 
 from apps.core.policies import viewer_owns
 from apps.libraries.services import PAGE_KINDS, page_items
+from apps.media.views import image_response
 
 from .forms import PageForm, ProfileForm
+from .home import home_features, visible_avatar
 from .models import PageKey
 from .services import (
     create_profile,
@@ -36,7 +38,9 @@ def website(request, username, page=PageKey.HOME):
     )
     if preview:
         viewer = AnonymousUser()
-    profile = get_object_or_404(visible_profiles(viewer), user__username=username)
+    profile = get_object_or_404(
+        visible_profiles(viewer).select_related("avatar"), user__username=username
+    )
     current = get_object_or_404(
         visible_pages(profile, viewer, include_disabled_for_owner=True), key=page
     )
@@ -55,8 +59,25 @@ def website(request, username, page=PageKey.HOME):
             "owner": viewer_owns(viewer, profile.user_id),
             "preview": preview,
             "item_page": item_page,
+            **(home_features(profile, viewer) if current.key == PageKey.HOME else {}),
         },
     )
+
+
+@never_cache
+@require_safe
+def avatar(request, username):
+    profile = get_object_or_404(
+        visible_profiles(request.user).select_related("avatar"), user__username=username
+    )
+    get_object_or_404(
+        visible_pages(profile, request.user, include_disabled_for_owner=True),
+        key=PageKey.HOME,
+    )
+    asset = visible_avatar(profile, request.user)
+    if asset is None:
+        raise Http404
+    return image_response(asset, "small")
 
 
 @never_cache

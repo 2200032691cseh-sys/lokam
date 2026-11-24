@@ -5,7 +5,9 @@ from django.test import Client
 from django.urls import reverse
 
 from apps.accounts.middleware import SESSION_GENERATION_KEY
+from apps.catalogue.models import CatalogueItem, ItemKind
 from apps.core.policies import Visibility
+from apps.libraries.models import UserItem
 from apps.profiles.models import PageKey
 from apps.profiles.services import create_profile, visible_pages
 
@@ -88,3 +90,37 @@ def test_lok_011_owner_reorders_without_touching_other_profiles(profile):
         PageKey.HOME,
     ]
     assert other_profile.pages.get(key=PageKey.HOME).position == 0
+
+
+@pytest.mark.django_db
+def test_lok_019_featured_favourite_cannot_bypass_origin_visibility(profile):
+    owner = logged_in(profile.user)
+    public_item = CatalogueItem.objects.create(
+        title="A selected novel", kind=ItemKind.BOOK, is_public=True
+    )
+    saved = UserItem.objects.create(
+        owner=profile.user,
+        item=public_item,
+        favourite=True,
+        feature_on_home=True,
+        visibility=Visibility.PUBLIC,
+    )
+    owner.post(
+        reverse("profiles:settings"),
+        {
+            "introduction": "Ordinary introduction text.",
+            "visibility": Visibility.PUBLIC,
+        },
+    )
+    home = reverse("profiles:home", args=[profile.user.username])
+    settings_url = reverse("profiles:configure-page", args=[PageKey.HOME])
+    owner.post(settings_url, {"enabled": "on", "visibility": Visibility.PUBLIC})
+    assert b"Ordinary introduction text." in Client().get(home).content
+    assert b"A selected novel" not in Client().get(home).content
+    books = reverse("profiles:configure-page", args=[PageKey.BOOKS])
+    owner.post(books, {"enabled": "on", "visibility": Visibility.PUBLIC})
+    assert b"A selected novel" in Client().get(home).content
+    saved.visibility = Visibility.PRIVATE
+    saved.save(update_fields=["visibility"])
+    assert b"A selected novel" not in Client().get(home).content
+    assert b"A selected novel" in owner.get(home).content
