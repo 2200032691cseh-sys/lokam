@@ -18,6 +18,8 @@ Use owner-scoped writes and composite owner constraints where IDs are repeated. 
 
 ## Schema review invariants
 
+Catalogue records have stable UUID URLs and independent internal keys. The shared public catalogue excludes every owner-scoped record. Credits to unpublished catalogue people are removed before rendering. Genre, theme and tag terms share one vocabulary table with uniqueness scoped by vocabulary kind.
+
 User login identifies accounts by trimmed, lowercase email. The public username uses a 32-character ASCII handle and is stored lowercase. Both are required and unique. The initial accounts migration creates the custom model before session-backed features are introduced.
 
 - Lock the owning profile or collection before loading or applying an order. A concurrent reorder must validate the final ID set against the current owner-scoped rows. Defer uniqueness only inside the transaction that assigns the final positions.

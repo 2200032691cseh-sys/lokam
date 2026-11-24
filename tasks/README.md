@@ -15,6 +15,7 @@
 | LOK-009 | Complete | PostgreSQL tests cover competing claims, reclaimed leases, stale completion, retry exhaustion, deduplication and owner-only cancellation. A command test exercises handler dispatch. |
 | LOK-010 | Complete | Account verification, recovery, replay, expiry, CSRF, throttling and old-session revocation passed against PostgreSQL and Django’s test mail backend. Production email remains a deployment gate. |
 | LOK-011 | Complete | Tests cover 20 private-by-default slots, public preview, composed visibility, owner editing and position changes without affecting another user. |
+| LOK-012 | Complete | Tests cover typed canonical items, Unicode aliases, public-only credits, pagination and the database prohibition on publishing owner-only records. |
 
 LOK-017 tests the architecture end to end with one user. LOK-058 is optional. LOK-067 is private beta and LOK-068 is the public launch gate.
 

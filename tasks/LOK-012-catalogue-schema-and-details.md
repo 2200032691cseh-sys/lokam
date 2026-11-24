@@ -1,6 +1,6 @@
 # LOK-012 Catalogue schema and details
 
-**Status** Planned. Architecture and task authorization required before implementation.
+**Status** Complete. Verified PostgreSQL constraints and public browse and detail routes.
 
 ## Problem being solved
 
