@@ -1,0 +1,61 @@
+:root {
+  color-scheme: dark;
+  --background: #080f24;
+  --secondary: #101b35;
+  --surface: #172440;
+  --separator: #293a59;
+  --text: #e8edf7;
+  --muted: #a3b1cd;
+  --link: #9baed5;
+  --focus: #f1c985;
+  --invalid: #ffb5b5;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--text);
+  font: 1rem / 1.6 system-ui, sans-serif;
+  overflow-wrap: anywhere;
+}
+
+.document { width: min(100% - 2rem, 53.125rem); margin-inline: auto; }
+.site-header { border-block-end: 1px solid var(--separator); }
+.site-header nav, .pagination { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; }
+.site-header nav { padding-block: .65rem; }
+main { padding-block: 2.25rem 4rem; }
+section + section { border-block-start: 1px solid var(--separator); }
+section { margin-block-start: 1.75rem; }
+section + section { padding-block-start: 1.25rem; }
+h1, h2, h3 { line-height: 1.25; margin-block: 0 .65rem; }
+h1 { font-size: 1.75rem; }
+h2 { font-size: 1.3125rem; }
+h3 { font-size: 1.125rem; }
+p { margin-block: 0 1rem; }
+small, .pagination { color: var(--muted); font-size: .875rem; }
+img { max-inline-size: 100%; block-size: auto; }
+a { color: var(--link); text-underline-offset: .18em; }
+a:hover { color: var(--text); }
+.brand { color: var(--text); display: inline-block; font-weight: 650; padding-block: .25rem; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 4px; }
+.skip-link { position: absolute; inset: .5rem auto auto .5rem; padding: .625rem; background: var(--secondary); }
+.skip-link:not(:focus) { clip-path: inset(50%); }
+
+form > div { margin-block: .75rem; }
+label { display: block; font-weight: 600; }
+fieldset { border: 1px solid var(--muted); }
+input, select, textarea, button {
+  font: inherit;
+  color: inherit;
+  background: var(--surface);
+  border: 1px solid var(--muted);
+  border-radius: .125rem;
+  padding: .375rem .625rem;
+  max-inline-size: 100%;
+}
+input[type="checkbox"], input[type="radio"] { accent-color: var(--link); }
+button { cursor: pointer; }
+[aria-invalid="true"] { border-color: var(--invalid); }
+.errorlist, .form-errors, .messages [role="alert"] { color: var(--invalid); }
