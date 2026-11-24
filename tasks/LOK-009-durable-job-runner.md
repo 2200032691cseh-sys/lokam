@@ -1,6 +1,6 @@
 # LOK-009 Durable job runner
 
-**Status** Planned. Architecture and task authorization required before implementation.
+**Status** Complete. Verified PostgreSQL leases, retry transitions, ownership and handler dispatch.
 
 ## Problem being solved
 
