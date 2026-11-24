@@ -1,0 +1,14 @@
+{% extends "platform/base.html" %}
+{% block title %}Data and image credits | Lokam{% endblock %}
+{% block content %}
+<h1>Data and image credits</h1>
+<p>Catalogue entries cite their individual sources, including Open Library and Wikidata when used.</p>
+<ul>
+  {% for image in page_obj %}
+    <li><a href="{% url 'catalogue:detail' image.source.item.public_id %}">{{ image.source.item.title }}</a> · {{ image.credit }} · {{ image.licence }}</li>
+  {% empty %}
+    <li>Image credits will appear when licensed artwork is available.</li>
+  {% endfor %}
+</ul>
+{% include "components/pagination.html" %}
+{% endblock %}

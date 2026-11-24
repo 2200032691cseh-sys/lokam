@@ -2,6 +2,7 @@
 {% block title %}Profile settings | Lokam{% endblock %}
 {% block content %}
 <h1>Profile settings</h1>
+<p><a href="{% url 'media:index' %}">Manage private images</a></p>
 <p>Choose who can see your website. Each page also has its own visibility setting.</p>
 <form method="post">
   {% csrf_token %}

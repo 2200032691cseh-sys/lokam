@@ -1,0 +1,33 @@
+{% extends "platform/base.html" %}
+{% block title %}Private images | Lokam{% endblock %}
+{% block content %}
+<h1>Private images</h1>
+<p>Upload a JPEG, PNG or WebP image up to 8 MB. Downloads use the processed image without camera metadata.</p>
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}{% include "components/form_fields.html" %}
+  <button type="submit">Upload image</button>
+</form>
+<ul class="image-library">
+  {% for asset in page_obj %}
+    <li>
+      {% if asset.state == "ready" %}
+        <img src="{% url 'media:image' asset.public_id 'small' %}"
+             {% if asset.variants.large.width > asset.variants.small.width %}srcset="{% url 'media:image' asset.public_id 'small' %} {{ asset.variants.small.width }}w, {% url 'media:image' asset.public_id 'large' %} {{ asset.variants.large.width }}w"{% endif %}
+             sizes="(max-width: 480px) 90vw, 320px" loading="lazy"
+             width="{{ asset.variants.small.width }}" height="{{ asset.variants.small.height }}" alt="{{ asset.description }}">
+        <p><a href="{% url 'media:image' asset.public_id 'large' %}?download=1">Download {{ asset.description }}</a></p>
+      {% else %}
+        <p>{{ asset.description }} · {{ asset.get_state_display }}</p>
+      {% endif %}
+      {% if asset.state != "deleting" %}
+        <form method="post" action="{% url 'media:delete' asset.public_id %}">
+          {% csrf_token %}<button>Delete {{ asset.description }}</button>
+        </form>
+      {% endif %}
+    </li>
+  {% empty %}
+    <li>Uploaded images will appear here.</li>
+  {% endfor %}
+</ul>
+{% include "components/pagination.html" %}
+{% endblock %}

@@ -17,11 +17,13 @@ HOSTS = {
     "open-library": "openlibrary.org",
     "wikidata-search": "www.wikidata.org",
     "wikidata-read": "www.wikidata.org",
+    "commons-image": "commons.wikimedia.org",
 }
 PATHS = {
     "open-library": re.compile(r"/(?:search\.json|works/OL[1-9][0-9]{0,15}W\.json)"),
     "wikidata-search": re.compile(r"/w/api\.php"),
     "wikidata-read": re.compile(r"/w/api\.php"),
+    "commons-image": re.compile(r"/w/api\.php"),
 }
 INTERVALS = {provider: 1 for provider in HOSTS}
 MAX_RESPONSE_BYTES = 512 * 1024

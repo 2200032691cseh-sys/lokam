@@ -2,6 +2,7 @@
 {% block title %}Catalogue | Lokam{% endblock %}
 {% block content %}
 <h1>Catalogue</h1>
+<p><a href="{% url 'catalogue:credits' %}">Data and image credits</a></p>
 <form method="get">
   <label for="catalogue-kind">Type</label>
   <select id="catalogue-kind" name="kind">

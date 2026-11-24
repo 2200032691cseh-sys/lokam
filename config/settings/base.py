@@ -34,8 +34,13 @@ INSTALLED_APPS = [
     "apps.catalogue",
     "apps.integrations",
     "apps.libraries",
+    "apps.media",
 ]
-LOKAM_JOB_HANDLERS = {"account-mail": "apps.accounts.services.send_account_mail"}
+LOKAM_JOB_HANDLERS = {
+    "account-mail": "apps.accounts.services.send_account_mail",
+    "process-media": "apps.media.services.process_media",
+    "delete-media": "apps.media.services.delete_media",
+}
 AUTH_USER_MODEL = "accounts.User"
 AUTHENTICATION_BACKENDS = ["apps.accounts.backends.VerifiedEmailBackend"]
 AUTH_PASSWORD_VALIDATORS = [
@@ -101,3 +106,19 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [BASE_DIR / "static"]
+STORAGES = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
+    "private": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+        "OPTIONS": {"location": BASE_DIR / "media"},
+    },
+}
+LOKAM_MEDIA_UPLOAD_BYTES = 8 * 1024 * 1024
+LOKAM_MEDIA_USER_BYTES = 100 * 1024 * 1024
+FILE_UPLOAD_HANDLERS = [
+    "apps.media.uploads.LimitFileUploadHandler",
+    "django.core.files.uploadhandler.MemoryFileUploadHandler",
+    "django.core.files.uploadhandler.TemporaryFileUploadHandler",
+]
+DATA_UPLOAD_MAX_NUMBER_FILES = 8
