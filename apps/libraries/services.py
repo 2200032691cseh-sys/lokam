@@ -144,5 +144,8 @@ def filter_saved_items(rows, *, state, query, favourite):
         | Q(item__tags__term__key__contains=query)
         | Q(item__movie__languages__icontains=query)
         | Q(item__movie__countries__icontains=query)
+        | Q(item__show__languages__icontains=query)
+        | Q(item__show__countries__icontains=query)
+        | Q(item__show__characters__character__in=names)
         | Q(item_id__in=related)
     ).distinct()

@@ -13,6 +13,11 @@ class Namespace(StrEnum):
     TMDB_MOVIE = "tmdb-movie"
     TMDB_SHOW = "tmdb-show"
     TMDB_PERSON = "tmdb-person"
+    TVMAZE_SHOW = "tvmaze-show"
+    TVMAZE_SEASON = "tvmaze-season"
+    TVMAZE_EPISODE = "tvmaze-episode"
+    TVMAZE_PERSON = "tvmaze-person"
+    TVMAZE_CHARACTER = "tvmaze-character"
     WIKIDATA = "wikidata"
     MUSICBRAINZ_ARTIST = "mb-artist"
     MUSICBRAINZ_RELEASE = "mb-release"
@@ -26,7 +31,9 @@ OPEN_LIBRARY_IDS = {
     Namespace.OPEN_LIBRARY_EDITION: ("/books/", "M"),
     Namespace.OPEN_LIBRARY_AUTHOR: ("/authors/", "A"),
 }
-TMDB_IDS = {Namespace.TMDB_MOVIE, Namespace.TMDB_SHOW, Namespace.TMDB_PERSON}
+NUMERIC_IDS = {
+    namespace for namespace in Namespace if namespace.startswith(("tmdb-", "tvmaze-"))
+}
 
 
 def _isbn13(value):
@@ -66,7 +73,7 @@ def normalize_identifier(namespace, value):
         key = value.lower().removeprefix(prefix).upper()
         if re.fullmatch(rf"OL[1-9][0-9]{{0,15}}{suffix}", key):
             return key
-    elif namespace in TMDB_IDS:
+    elif namespace in NUMERIC_IDS:
         if re.fullmatch(r"[0-9]{1,12}", value) and int(value):
             return str(int(value))
     elif namespace == Namespace.WIKIDATA:

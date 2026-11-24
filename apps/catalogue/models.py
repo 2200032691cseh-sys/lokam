@@ -140,6 +140,69 @@ class Movie(models.Model):
     languages = models.CharField(max_length=240, blank=True)
 
 
+class TVShow(models.Model):
+    item = models.OneToOneField(
+        CatalogueItem, on_delete=models.CASCADE, related_name="show"
+    )
+    premiere_date = models.DateField(null=True, blank=True)
+    countries = models.CharField(max_length=240, blank=True)
+    languages = models.CharField(max_length=240, blank=True)
+
+
+class TVSeason(models.Model):
+    item = models.OneToOneField(
+        CatalogueItem, on_delete=models.CASCADE, related_name="season"
+    )
+    show = models.ForeignKey(TVShow, on_delete=models.PROTECT, related_name="seasons")
+    number = models.PositiveSmallIntegerField()
+    premiere_date = models.DateField(null=True, blank=True)
+
+    def __str__(self):
+        return self.item.title
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["show", "number"], name="catalogue_season_number"
+            )
+        ]
+
+
+class TVEpisode(models.Model):
+    item = models.OneToOneField(
+        CatalogueItem, on_delete=models.CASCADE, related_name="episode"
+    )
+    season = models.ForeignKey(
+        TVSeason, on_delete=models.PROTECT, related_name="episodes"
+    )
+    number = models.PositiveSmallIntegerField(null=True, blank=True)
+    air_date = models.DateField(null=True, blank=True)
+
+    def __str__(self):
+        return self.item.title
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["season", "number"], name="catalogue_episode_number"
+            )
+        ]
+
+
+class TVShowCharacter(models.Model):
+    show = models.ForeignKey(
+        TVShow, on_delete=models.CASCADE, related_name="characters"
+    )
+    character = models.ForeignKey(CatalogueItem, on_delete=models.CASCADE)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["show", "character"], name="catalogue_show_character"
+            )
+        ]
+
+
 class Person(models.Model):
     item = models.OneToOneField(
         CatalogueItem, on_delete=models.CASCADE, related_name="person"
@@ -275,6 +338,7 @@ class ExternalIdentifier(models.Model):
 class SourceProvider(models.TextChoices):
     OPEN_LIBRARY = "open-library", "Open Library"
     TMDB = "tmdb", "TMDB"
+    TVMAZE = "tvmaze", "TVmaze"
     WIKIDATA = "wikidata", "Wikidata"
     MUSICBRAINZ = "musicbrainz", "MusicBrainz"
     WIKIMEDIA = "wikimedia", "Wikimedia"

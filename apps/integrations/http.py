@@ -19,6 +19,7 @@ HOSTS = {
     "wikidata-read": "www.wikidata.org",
     "wikidata-labels": "www.wikidata.org",
     "commons-image": "commons.wikimedia.org",
+    "tvmaze": "api.tvmaze.com",
 }
 PATHS = {
     "open-library": re.compile(
@@ -28,6 +29,9 @@ PATHS = {
     "wikidata-read": re.compile(r"/w/api\.php"),
     "wikidata-labels": re.compile(r"/w/api\.php"),
     "commons-image": re.compile(r"/w/api\.php"),
+    "tvmaze": re.compile(
+        r"/(?:shows/[1-9][0-9]{0,11}|seasons/[1-9][0-9]{0,11}/episodes)"
+    ),
 }
 INTERVALS = {provider: 1 for provider in HOSTS}
 MAX_RESPONSE_BYTES = 512 * 1024
@@ -92,6 +96,7 @@ def get_json(
     headers=None,
     transport=None,
     resolver=_public_address,
+    expected=dict,
 ):
     if provider not in HOSTS or not PATHS[provider].fullmatch(path):
         raise ValueError("External requests require an approved provider endpoint.")
@@ -141,7 +146,7 @@ def get_json(
                 if len(body) > MAX_RESPONSE_BYTES or monotonic() > deadline:
                     raise ValueError("The provider response exceeded its budget.")
             data = json.loads(body)
-            if not isinstance(data, dict):
+            if not isinstance(data, expected):
                 raise ValueError("The provider returned an unexpected response.")
     except ProviderUnavailable:
         raise
